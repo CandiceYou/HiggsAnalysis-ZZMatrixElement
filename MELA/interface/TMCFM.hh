@@ -15,7 +15,7 @@
 // nflavors constants.f 
 enum {nf=5};
 // maxpart constants.f 
-enum {mxpart=14}; // MCFM 6.8: CAUTION!!! IMPORTANT TO CHECK WHEN UPDATING MCFM!!!
+enum {mxpart=14}; // MCFM 6.8+: CAUTION!!! IMPORTANT TO CHECK WHEN UPDATING MCFM!!!
 //enum {mxpart=12}; // MCFM 6.7
 //mxdim.f
 enum {ndims=22};
