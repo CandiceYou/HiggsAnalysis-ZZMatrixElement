@@ -29,8 +29,6 @@
 #include "assert.h"
 #include "TROOT.h"
 // ME related
-#include "TMCFM.hh"
-#include "TVar.hh"
 #include "TUtil.hh"
 #include "ZZMatrixElement/MELA/interface/HiggsCSandWidth_MELA.h"
 
@@ -128,10 +126,12 @@ public:
 
   void SetRenFacScaleMode(TVar::EventScaleScheme renormalizationSch, TVar::EventScaleScheme factorizationSch, double ren_sf, double fac_sf);
   void ResetRenFacScaleMode(){ SetRenFacScaleMode(TVar::DefaultScaleScheme, TVar::DefaultScaleScheme, 0.5, 0.5); };
+  me_record GetFullMERecord(){ return RcdME; };
+  void ResetMERecord();
 
 private:
   event_scales_type event_scales;
-
+  me_record RcdME;
 
   ClassDef(TEvtProb,0);
 };

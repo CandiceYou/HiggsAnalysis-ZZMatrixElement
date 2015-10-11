@@ -38,6 +38,7 @@ TEvtProb::TEvtProb(const char* path, double ebeam) :EBEAM(ebeam){
   spinzerohiggs_anomcoupl_.Lambda_Q=10000;
 
   ResetRenFacScaleMode();
+  ResetMERecord();
 }
 
 
@@ -89,7 +90,7 @@ double TEvtProb::XsecCalc(TVar::Process proc, TVar::Production production, const
   double selfDGqqcoupl[SIZE_GQQ][2],
   double selfDGggcoupl[SIZE_GGG][2],
   double selfDGvvcoupl[SIZE_GVV][2]){
-  me_record RcdME;
+  ResetMERecord();
 
   //Initialize Process
   SetProcess(proc);
@@ -510,7 +511,7 @@ double TEvtProb::XsecCalc_VVXVV(
   double selfDHvvcoupl[SIZE_HVV][2],
   double selfDHwwcoupl[SIZE_HVV][2]
   ){
-  me_record RcdME;
+  ResetMERecord();
 
   //Initialize Process
   SetProcess(proc);
@@ -609,7 +610,7 @@ double TEvtProb::XsecCalc_VVXVV(
 
 // Cross-section calculations for H + 2 jets
 double TEvtProb::XsecCalcXJJ(TVar::Process proc, TVar::Production production, TLorentzVector p4[3], TVar::VerbosityLevel verbosity, double selfDHggcoupl[SIZE_HGG][2], double selfDHvvcoupl[SIZE_HVV_VBF][2], double selfDHwwcoupl[SIZE_HWW_VBF][2]){
-  me_record RcdME;
+  ResetMERecord();
   double dXsec = 0;
 
   // Initialize Process
@@ -714,7 +715,7 @@ double TEvtProb::XsecCalcXJJ(TVar::Process proc, TVar::Production production, TL
 
 // Cross-section calculations for H (SM) + 1 jet
 double TEvtProb::XsecCalcXJ(TVar::Process proc, TVar::Production production, TLorentzVector p4[2], TVar::VerbosityLevel verbosity){
-  me_record RcdME;
+  ResetMERecord();
   double dXsec = 0;
 
   double Hggcoupl[SIZE_HGG][2] ={ { 0 } };
@@ -786,6 +787,7 @@ double TEvtProb::XsecCalc_VX(TVar::Process proc, TVar::Production production, vh
   TVar::VerbosityLevel verbosity,
   double selfDHvvcoupl[SIZE_HVV_VBF][2]
   ){
+  ResetMERecord();
 
   //Initialize Process
   SetProcess(proc);
@@ -797,7 +799,6 @@ double TEvtProb::XsecCalc_VX(TVar::Process proc, TVar::Production production, vh
   const double N_Q=5.;
 
   //Weight calculation
-  me_record RcdME;
   double msqjk=0;
 
   if (
@@ -931,6 +932,7 @@ double TEvtProb::XsecCalc_TTX(
   TVar::VerbosityLevel verbosity,
   double selfDHvvcoupl[SIZE_TTH][2]
   ){
+  ResetMERecord();
 
   // Set Couplings at the TTH vertex
   double Hvvcoupl[SIZE_TTH][2] ={ { 0 } };
@@ -1053,3 +1055,16 @@ void TEvtProb::SetHiggsMass(double mass, float wHiggs){
     std::cout << "H250 width " << myCSW_->HiggsWidth(0, 250);
 */
 }
+
+void TEvtProb::ResetMERecord(){
+  for (int ii=0; ii<nmsq; ii++){
+    (RcdME.partonWeight)[0][ii] = 0;
+    (RcdME.partonWeight)[1][ii] = 0;
+    for (int jj=0; jj<nmsq; jj++){
+      (RcdME.MEsq)[ii][jj] = 0;
+      (RcdME.weightedMEsq)[ii][jj] = 0;
+    }
+  }
+}
+
+

@@ -738,35 +738,23 @@ double SumMatrixElementPDF(
   TVar::Process process, TVar::Production production, TVar::MatrixElement matrixElement, event_scales_type* event_scales, mcfm_event_type* mcfm_event, me_record* RcdME,
   double* flux, double EBEAM, double coupling[SIZE_HVV_FREENORM]
   ){
+  double xx[2]={ 0 };
+  if (!CheckPartonMomFraction(mcfm_event->p[0], mcfm_event->p[1], xx, TVar::ERROR, EBEAM)) return 0;
+
   TLorentzVector MomStore[mxpart];
   for (int i = 0; i < mxpart; i++) MomStore[i].SetXYZT(0, 0, 0, 0);
 
   int NPart=npart_.npart+2;
   double p4[4][mxpart] = { { 0 } };
   double s[mxpart][mxpart] = { { 0 } };
-  double fx1[nmsq];
-  double fx2[nmsq];
-  double msq[nmsq][nmsq];
+  double fx1[nmsq]={ 0 };
+  double fx2[nmsq]={ 0 };
+
+  int channeltoggle=0;
+  double msq[nmsq][nmsq]={ { 0 } };
   double msqjk=0;
   double msqgg=0;
-  int channeltoggle=0;
-  
-  //Parton Density Function is always evaluated at pT=0 frame
-  //Make sure parton Level Energy fraction is [0,1]
-  //phase space function already makes sure the parton energy fraction between [min,1]
-  //  x0 EBeam =>   <= -x1 EBeam
-  
-  double sysPz=mcfm_event->p[0].Pz()    +mcfm_event->p[1].Pz();
-  double sysE =mcfm_event->p[0].Energy()+mcfm_event->p[1].Energy();
-  
-  //Ignoring the Pt doesn't make significant effect
-  //double sysPt_sqr=sysPx*sysPx+sysPy*sysPy;
-  //if(sysPt_sqr>=1.0E-10)  sysE=TMath::Sqrt(sysE*sysE-sysPt_sqr);
-  
-  double xx[2]={(sysE+sysPz)/EBEAM/2,(sysE-sysPz)/EBEAM/2};
-  if(xx[0] > 1.0 || xx[0]<=xmin_.xmin) return 0;
-  if(xx[1] > 1.0 || xx[1]<=xmin_.xmin) return 0;
-  
+
   //Convert TLorentzVector into 4xNPart Matrix
   //reverse sign of incident partons
   for(int ipar=0;ipar<2;ipar++){    
@@ -792,14 +780,14 @@ double SumMatrixElementPDF(
   
   double defaultRenScale = scale_.scale;
   double defaultFacScale = facscale_.facscale;
-//  cout << "Default scales: " << defaultRenScale << '\t' << defaultFacScale << endl;
+  //cout << "Default scales: " << defaultRenScale << '\t' << defaultFacScale << endl;
   int defaultNloop = nlooprun_.nlooprun;
   int defaultNflav = nflav_.nflav;
   string defaultPdflabel = pdlabel_.pdlabel;
   double renQ = InterpretScaleScheme(production, matrixElement, event_scales->renomalizationScheme, MomStore);
-//  cout << "renQ: " << renQ << " x " << event_scales->ren_scale_factor << endl;
+  //cout << "renQ: " << renQ << " x " << event_scales->ren_scale_factor << endl;
   double facQ = InterpretScaleScheme(production, matrixElement, event_scales->factorizationScheme, MomStore);
-//  cout << "facQ: " << facQ << " x " << event_scales->fac_scale_factor << endl;
+  //cout << "facQ: " << facQ << " x " << event_scales->fac_scale_factor << endl;
   SetAlphaS(renQ, facQ, event_scales->ren_scale_factor, event_scales->fac_scale_factor, 1, 5, "cteq6_l"); // Set AlphaS(|Q|/2, mynloop, mynflav, mypartonPDF) for MCFM ME-related calculations
 
   //calculate invariant masses between partons/final state particles
@@ -854,11 +842,11 @@ double SumMatrixElementPDF(
 
       fdist_(&density_.ih1, &xx[0], &facscale_.facscale, fx1);
       fdist_(&density_.ih2, &xx[1], &facscale_.facscale, fx2);
-      (RcdME->MEsq)[5][5] = msq[5][5];
       for (int i=0; i<nmsq; i++){
         (RcdME->partonWeight)[0][i] = fx1[i];
         (RcdME->partonWeight)[1][i] = fx2[i];
       }
+      (RcdME->MEsq)[5][5] = msq[5][5];
       (RcdME->weightedMEsq)[5][5] = fx2[5]*msq[5][5]*fx1[5];
     }
     if ((process==TVar::bkgZZ_SMHiggs || process==TVar::HSMHiggs || process==TVar::bkgZZ) && production==TVar::JJVBF) qq_zzqq_(p4[0], msq[0]); // VBF MCFM SBI, S or B
@@ -898,16 +886,16 @@ double SumMatrixElementPDF(
 */
     if ((process==TVar::bkgZZ_SMHiggs || process==TVar::HSMHiggs || process==TVar::bkgZZ) && production==TVar::JJVBF) msqjk=SumMEPDF(mcfm_event->p[0], mcfm_event->p[1], msq, RcdME, TVar::ERROR, EBEAM);
 
-    (*flux)=fbGeV2/(8*xx[0]*xx[1]*EBEAM*EBEAM);
+    (*flux)=fbGeV2/(8.*xx[0]*xx[1]*EBEAM*EBEAM);
   }
 
-  if (msqjk != msqjk || flux!=flux){
-    std::cout << "SumMatrixPDF: "<< TVar::ProcessName(process) << " msqjk="  << msqjk << " flux="<< *flux << std::endl;
+  if (msqjk != msqjk || (*flux)!=(*flux)){
+    std::cout << "SumMatrixPDF: "<< TVar::ProcessName(process) << " msqjk="  << msqjk << " flux="<< (*flux) << std::endl;
     msqjk=0;
-    *flux=0;
+    (*flux)=0;
   }
 
-//  cout << "Before reset: " << scale_.scale << '\t' << facscale_.facscale << endl;
+  //cout << "Before reset: " << scale_.scale << '\t' << facscale_.facscale << endl;
   SetAlphaS(defaultRenScale, defaultFacScale, 1., 1., defaultNloop, defaultNflav, defaultPdflabel); // Protection for other probabilities
 //  cout << "Default scale reset: " << scale_.scale << '\t' << facscale_.facscale << endl;
   return msqjk;
@@ -923,10 +911,10 @@ double JHUGenMatEl(
   ){
   // input unit = GeV/100 such that 125GeV is 1.25 in the code
   // this needs to be applied for all the p4
-  MReso = MReso / 100.0;
-  GaReso = GaReso /100.0;
+  MReso = MReso / 100.;
+  GaReso = GaReso /100.;
 
-  double p4[6][4];
+  double p4[6][4]={ { 0 } };
   double MatElSq=0;
   int MYIDUP[4];
 
@@ -1027,17 +1015,8 @@ double JHUGenMatEl(
     // p(1:4,1) = (/   -1.25d0,    0.00d0,    0.00d0,    0.00d0   /),
     // is the resonance momentum in its rest frame, which is crossed into the final state, 
     // i.e. the physical momentum is  -p(1:4,1) with a mass of 125GeV.
-    double P[6][4];
+    double P[6][4]={ { 0 } };
     P[0][0]=-(mcfm_event->p[0]+mcfm_event->p[1]).M()/100.;
-    P[0][1]=0.0;
-    P[0][2]=0.0;
-    P[0][3]=0.0;
-
-    P[1][0]=0.0;
-    P[1][1]=0.0;
-    P[1][2]=0.0;
-    P[1][3]=0.0;
-
     // initialize decayed particles
     for (int ipar=2; ipar<NPart; ipar++){
       P[ipar][0] = mcfm_event->p[ipar].Energy()/100.;
@@ -1159,7 +1138,7 @@ double HJJMatEl(
     return sum_msqjk;
   }
 
-  return 0.;
+  return 0;
 }
 
 double VHiggsMatEl(
@@ -1179,8 +1158,8 @@ double VHiggsMatEl(
   int vh_ids[9] = { 0 };
   int n_HiggsFermions=0;
 
-	MReso /=100.0;
-	GaReso /= 100.0;
+	MReso /=100.;
+	GaReso /= 100.;
 
   // FOTRAN convention -5    -4   -3  -2    -1  0 1 2 3 4 5 
   //     parton flavor bbar cbar sbar ubar dbar g d u s c b
@@ -1203,7 +1182,7 @@ double VHiggsMatEl(
 */
   TLorentzVector pVH[9];
 //  TLorentzVector pVH[11];
-  TLorentzVector nullVector(0,0,0,0);
+  TLorentzVector nullVector(0, 0, 0, 0);
   for (int i = 0; i < 2; i++) pVH[i] = p[i];
   pVH[2] = p[0] + p[1]; // V*
   pVH[4] = p[2]; // H
@@ -1280,12 +1259,12 @@ double VHiggsMatEl(
   vh_ids[4] = 25;
   vh_ids[5] = Vdecay_id[0]; // Handle jet-inclusive ME outside this function
   vh_ids[6] = Vdecay_id[1];
-//  cout << "id5: " << vh_ids[5] << "\tid6: " << vh_ids[6] << endl;
+  //cout << "id5: " << vh_ids[5] << "\tid6: " << vh_ids[6] << endl;
 
   if ( verbosity >= TVar::DEBUG ) {
     for(int i=0;i<9;i++) std::cout << "p4[0] = "  << p4[i][0] << ", " <<  p4[i][1] << ", "  <<  p4[i][2] << ", "  <<  p4[i][3] << "\n";
     for(int i=0;i<9;i++) std::cout << "m(" << i << ") = "  << masses[0][i] << ", " <<  masses[0][i] << "\n";
-//    for(int i=0;i<9;i++) std::cout << "id(" << i << ") = "  << vh_ids[i] << endl;
+    //for(int i=0;i<9;i++) std::cout << "id(" << i << ") = "  << vh_ids[i] << endl;
   }
 
   const double allowed_helicities[2] = { -1, 1 };
@@ -1481,50 +1460,62 @@ double TTHiggsMatEl(
   return sumME;
 }
 
-
-// Below code sums over all production parton flavors according to PDF 
-double SumMEPDF(const TLorentzVector p0, const TLorentzVector p1, double msq[nmsq][nmsq], me_record* RcdME, TVar::VerbosityLevel verbosity, double EBEAM){
-  //Calculate Pdf
-  //Parton Density Function is always evalualted at pT=0 frame
+bool CheckPartonMomFraction(const TLorentzVector p0, const TLorentzVector p1, double xx[2], TVar::VerbosityLevel verbosity, double EBEAM){
   //Make sure parton Level Energy fraction is [0,1]
   //phase space function already makes sure the parton energy fraction between [min,1]
   //  x0 EBeam =>   <= -x1 EBeam
   double sysPz=p0.Pz()    + p1.Pz();
   double sysE =p0.Energy()+ p1.Energy();
-  
+
   //Ignore the Pt doesn't make significant effect
   //double sysPt_sqr=sysPx*sysPx+sysPy*sysPy;
   //if(sysPt_sqr>=1.0E-10)  sysE=TMath::Sqrt(sysE*sysE-sysPt_sqr);
-  double xx[2]={(sysE+sysPz)/EBEAM/2,(sysE-sysPz)/EBEAM/2};
-  if ( verbosity >= TVar::DEBUG ) std::cout << "xx[0]: " << xx[0] << "\txx[1] = " << xx[1] << "\n";
+  xx[0]=(sysE+sysPz)/EBEAM/2.;
+  xx[1]=(sysE-sysPz)/EBEAM/2.;
+  if (verbosity >= TVar::DEBUG) std::cout << "xx[0]: " << xx[0] << ", xx[1] = " << xx[1] << '\n';
 
-  if(xx[0] > 1.0 || xx[0]<=xmin_.xmin) return 0;
-  if(xx[1] > 1.0 || xx[1]<=xmin_.xmin) return 0;
-  double fx1[nmsq];
-  double fx2[nmsq];
+  if (
+    xx[0] > 1.0 || xx[0]<=xmin_.xmin
+    ||
+    xx[1] > 1.0 || xx[1]<=xmin_.xmin
+    ) return false;
+  else return true;
+}
 
-  //Always pass address through fortran function
-  fdist_(&density_.ih1, &xx[0], &facscale_.facscale, fx1);
-  fdist_(&density_.ih2, &xx[1], &facscale_.facscale, fx2);
+void ComputePDF(const TLorentzVector p0, const TLorentzVector p1, double fx1[nmsq], double fx2[nmsq], TVar::VerbosityLevel verbosity, double EBEAM){
+  double xx[2]={ 0 };
+  bool passPartonErgFrac=CheckPartonMomFraction(p0, p1, xx, verbosity, EBEAM);
+  if (passPartonErgFrac){
+    //Calculate Pdf
+    //Parton Density Function is always evalualted at pT=0 frame
+    //Always pass address through fortran function
+    fdist_(&density_.ih1, &xx[0], &facscale_.facscale, fx1);
+    fdist_(&density_.ih2, &xx[1], &facscale_.facscale, fx2);
+  }
+}
 
+
+// Below code sums over all production parton flavors according to PDF 
+double SumMEPDF(const TLorentzVector p0, const TLorentzVector p1, double msq[nmsq][nmsq], me_record* RcdME, TVar::VerbosityLevel verbosity, double EBEAM){
+  double msqjk(0.);
+  double fx1[nmsq]={ 0 };
+  double fx2[nmsq]={ 0 };
+  ComputePDF(p0, p1, fx1, fx2, verbosity, EBEAM);
   for (int i=0; i<nmsq; i++){
     (RcdME->partonWeight)[0][i] = fx1[i];
     (RcdME->partonWeight)[1][i] = fx2[i];
-    if (verbosity >= TVar::DEBUG) std::cout << "fx1[" << i << "]: " <<  fx1[i] << "\tfx2[" << i << "]: " <<  fx2[i] << std::endl;
+    if (verbosity >= TVar::DEBUG) std::cout << "fx1[" << i << "]: " <<  (RcdME->partonWeight)[0][i] << "\tfx2[" << i << "]: " <<  (RcdME->partonWeight)[1][i] << std::endl;
   }
-
-  double msqjk(0.);
   for(int ii=0;ii<nmsq;ii++){
     for(int jj=0;jj<nmsq;jj++){
       //2-D matrix is reversed in fortran
       // msq[ parton2 ] [ parton1 ]
       double flavor_msq = fx1[ii]*fx2[jj]*msq[jj][ii];
       msqjk += flavor_msq;
-      (RcdME->MEsq)[ii][jj] = msq[jj][ii];
+      (RcdME->MEsq)[ii][jj] = msq[jj][ii]; // MEsq is not inverted as in Fortran
       (RcdME->weightedMEsq)[ii][jj] = flavor_msq;
     }//ii
   }//jj
-  
   return msqjk;
 }
 

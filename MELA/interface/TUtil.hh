@@ -63,6 +63,8 @@ double TTHiggsMatEl(
   double MReso, double GaReso, double MFerm, double GaFerm, double Hvvcoupl[SIZE_TTH][2],
   int topDecay, int topProcess, TVar::VerbosityLevel verbosity
   );
+bool CheckPartonMomFraction(const TLorentzVector p0, const TLorentzVector p1, double xx[2], TVar::VerbosityLevel verbosity, double EBEAM);
+void ComputePDF(const TLorentzVector p0, const TLorentzVector p1, double fx1[nmsq], double fx2[nmsq], TVar::VerbosityLevel verbosity, double EBEAM);
 double SumMEPDF(const TLorentzVector p0, const TLorentzVector p1, double flavor_msq[nmsq][nmsq], me_record* RcdME, TVar::VerbosityLevel verbosity, double EBEAM);
 double InterpretScaleScheme(TVar::Production production, TVar::MatrixElement matrixElement, TVar::EventScaleScheme scheme, TLorentzVector p[mxpart]);
 
