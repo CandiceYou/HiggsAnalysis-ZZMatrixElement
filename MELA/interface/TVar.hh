@@ -268,9 +268,7 @@ struct me_record{
     for (int ix=0; ix<nmsq; ix++){
       partonWeight[0][ix]=partonOneWeight_[ix];
       partonWeight[1][ix]=partonTwoWeight_[ix];
-      for (int ix=0; ix<nmsq; ix++){
-        for (int iy=0; iy<nmsq; iy++) MEsq[ix][iy]=MEsq_[ix][iy];
-      }
+      for (int iy=0; iy<nmsq; iy++) MEsq[ix][iy]=MEsq_[ix][iy];
     }
     for (int ix=0; ix<nmsq; ix++){
       for (int iy=0; iy<nmsq; iy++) weightedMEsq[ix][iy]=partonWeight[0][ix]*MEsq[ix][iy]*partonWeight[1][iy];
