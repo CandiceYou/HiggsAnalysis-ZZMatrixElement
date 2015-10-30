@@ -40,7 +40,7 @@ void SetMCFMHiggsDecayCouplings(bool useBSM, double Hvvcoupl[SIZE_HVV][2], doubl
 bool My_smalls(double s[][mxpart], int npart);
 double SumMatrixElementPDF(
   TVar::Process procees, TVar::Production production, TVar::MatrixElement matrixElement,
-  event_scales_type* event_scales, mcfm_event_type* mcfm_event, me_record* RcdME,
+  event_scales_type* event_scales, mcfm_event_type* mcfm_event, MelaOutputRecord* RcdME,
   double* flux, double EBEAM, double coupling[SIZE_HVV_FREENORM]
   );
 double JHUGenMatEl(
@@ -49,12 +49,12 @@ double JHUGenMatEl(
   double Gqqcoupl[SIZE_GQQ][2], double Gggcoupl[SIZE_GGG][2], double Gvvcoupl[SIZE_GVV][2]
   );
 double HJJMatEl(
-  TVar::Process process, TVar::Production production, TVar::MatrixElement matrixElement, event_scales_type* event_scales, me_record* RcdME,
+  TVar::Process process, TVar::Production production, TVar::MatrixElement matrixElement, event_scales_type* event_scales, MelaOutputRecord* RcdME,
   const TLorentzVector p[5], double Hggcoupl[SIZE_HGG][2], double Hvvcoupl[SIZE_HVV_VBF][2], double Hwwcoupl[SIZE_HWW_VBF][2],
   TVar::VerbosityLevel verb, double EBEAM
   );
 double VHiggsMatEl(
-  TVar::Process process, TVar::Production production, event_scales_type* event_scales, me_record* RcdME,
+  TVar::Process process, TVar::Production production, event_scales_type* event_scales, MelaOutputRecord* RcdME,
   TLorentzVector p[5], TLorentzVector pHdaughter[4], int Vdecay_id[6],
   double MReso, double GaReso, double Hvvcoupl[SIZE_HVV_VBF][2], TVar::VerbosityLevel verbosity, double EBEAM
   );
@@ -65,7 +65,7 @@ double TTHiggsMatEl(
   );
 bool CheckPartonMomFraction(const TLorentzVector p0, const TLorentzVector p1, double xx[2], TVar::VerbosityLevel verbosity, double EBEAM);
 void ComputePDF(const TLorentzVector p0, const TLorentzVector p1, double fx1[nmsq], double fx2[nmsq], TVar::VerbosityLevel verbosity, double EBEAM);
-double SumMEPDF(const TLorentzVector p0, const TLorentzVector p1, double flavor_msq[nmsq][nmsq], me_record* RcdME, TVar::VerbosityLevel verbosity, double EBEAM);
+double SumMEPDF(const TLorentzVector p0, const TLorentzVector p1, double flavor_msq[nmsq][nmsq], MelaOutputRecord* RcdME, TVar::VerbosityLevel verbosity, double EBEAM);
 double InterpretScaleScheme(TVar::Production production, TVar::MatrixElement matrixElement, TVar::EventScaleScheme scheme, TLorentzVector p[mxpart]);
 
 #endif

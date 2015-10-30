@@ -735,7 +735,7 @@ bool My_smalls(double s[][mxpart], int npart){
 // 3. number of final state particle is defined
 //
 double SumMatrixElementPDF(
-  TVar::Process process, TVar::Production production, TVar::MatrixElement matrixElement, event_scales_type* event_scales, mcfm_event_type* mcfm_event, me_record* RcdME,
+  TVar::Process process, TVar::Production production, TVar::MatrixElement matrixElement, event_scales_type* event_scales, mcfm_event_type* mcfm_event, MelaOutputRecord* RcdME,
   double* flux, double EBEAM, double coupling[SIZE_HVV_FREENORM]
   ){
   double xx[2]={ 0 };
@@ -1045,7 +1045,7 @@ double JHUGenMatEl(
 }
 
 double HJJMatEl(
-  TVar::Process process, TVar::Production production, TVar::MatrixElement matrixElement, event_scales_type* event_scales, me_record* RcdME,
+  TVar::Process process, TVar::Production production, TVar::MatrixElement matrixElement, event_scales_type* event_scales, MelaOutputRecord* RcdME,
   const TLorentzVector p[5], double Hggcoupl[SIZE_HGG][2], double Hvvcoupl[SIZE_HVV_VBF][2], double Hwwcoupl[SIZE_HWW_VBF][2],
   TVar::VerbosityLevel verbosity, double EBEAM
   ){
@@ -1142,7 +1142,7 @@ double HJJMatEl(
 }
 
 double VHiggsMatEl(
-  TVar::Process process, TVar::Production production, event_scales_type* event_scales, me_record* RcdME,
+  TVar::Process process, TVar::Production production, event_scales_type* event_scales, MelaOutputRecord* RcdME,
   TLorentzVector p[5], TLorentzVector pHdaughter[4], int Vdecay_id[6],
   double MReso, double GaReso, double Hvvcoupl[SIZE_HVV_VBF][2],
   TVar::VerbosityLevel verbosity, double EBEAM
@@ -1496,7 +1496,7 @@ void ComputePDF(const TLorentzVector p0, const TLorentzVector p1, double fx1[nms
 
 
 // Below code sums over all production parton flavors according to PDF 
-double SumMEPDF(const TLorentzVector p0, const TLorentzVector p1, double msq[nmsq][nmsq], me_record* RcdME, TVar::VerbosityLevel verbosity, double EBEAM){
+double SumMEPDF(const TLorentzVector p0, const TLorentzVector p1, double msq[nmsq][nmsq], MelaOutputRecord* RcdME, TVar::VerbosityLevel verbosity, double EBEAM){
   double msqjk(0.);
   double fx1[nmsq]={ 0 };
   double fx2[nmsq]={ 0 };

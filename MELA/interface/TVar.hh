@@ -235,8 +235,8 @@ static const TString branch_format_particle =
   "Phi/D";
 
 // in development
-struct me_record{
-  me_record(){
+struct MelaOutputRecord{
+  MelaOutputRecord(){
     for (int ix=0; ix<nmsq; ix++){
       for (int pp=0; pp<2; pp++) partonWeight[pp][ix]=0;
       for (int iy=0; iy<nmsq; iy++){
@@ -245,7 +245,7 @@ struct me_record{
       }
     }
   }
-  me_record(
+  MelaOutputRecord(
     double partonOneWeight_[nmsq],
     double partonTwoWeight_[nmsq],
     double MEsq_[nmsq][nmsq],
@@ -260,7 +260,7 @@ struct me_record{
       }
     }
   }
-  me_record(
+  MelaOutputRecord(
     double partonOneWeight_[nmsq],
     double partonTwoWeight_[nmsq],
     double MEsq_[nmsq][nmsq]

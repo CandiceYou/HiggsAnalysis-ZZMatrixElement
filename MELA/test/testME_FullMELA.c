@@ -1925,7 +1925,7 @@ void testME_FullMELA_BSMMCFMVBF(float multiplierWW=1, int flavor=0){
 
   //TString cinput_main = "/scratch0/hep/ianderso/CJLST/140519/PRODFSR_8TeV";
   //TFile* finput = new TFile(Form("%s/%s/HZZ4lTree_ZZTo%s.root", cinput_main.Data(), (flavor==0 ? "2mu2e" : "4e"), (flavor==0 ? "2e2mu" : "4e")), "read");
-  TString cinput_main = "/scratch0/hep/usarical/VBF-JHUGen-13TeV/LHC_13TeV_VBFHZZ4l/0+m";
+  TString cinput_main = "/scratch0/hep/usarical/VBF-JHUGen-13TeV/LHC_13TeV_VBFHZZ4l/0-";
   TFile* finput = new TFile(Form("%s/VBFH125toZZ4l_13TeV.root", cinput_main.Data()), "read");
   TFile* foutput = new TFile(Form("HZZ4lTree_ZZTo%s_vbfMCFMJHUGenTest.root", (flavor==0 ? "2e2mu" : "4e")), "recreate");
 
@@ -1941,6 +1941,17 @@ void testME_FullMELA_BSMMCFMVBF(float multiplierWW=1, int flavor=0){
   float pvbfg1g2_pi2_VAMCFM;
   float pvbfg1g4_VAMCFM;
   float pvbfg1g4_pi2_VAMCFM;
+
+  float pFullvbf0plus_VAMCFM[11][11]={ { 0 } };
+  float pFullvbf0hplus_VAMCFM[11][11]={ { 0 } };
+  float pFullvbf0minus_VAMCFM[11][11]={ { 0 } };
+  float pFullvbf0_g1prime2_VAMCFM[11][11]={ { 0 } };
+  float pFullvbfg1g1prime2_VAMCFM[11][11]={ { 0 } };
+  float pFullvbfg1g1prime2_pi2_VAMCFM[11][11]={ { 0 } };
+  float pFullvbfg1g2_VAMCFM[11][11]={ { 0 } };
+  float pFullvbfg1g2_pi2_VAMCFM[11][11]={ { 0 } };
+  float pFullvbfg1g4_VAMCFM[11][11]={ { 0 } };
+  float pFullvbfg1g4_pi2_VAMCFM[11][11]={ { 0 } };
 
   float p0plus_VAMCFM;
   float p0hplus_VAMCFM;
@@ -1963,6 +1974,17 @@ void testME_FullMELA_BSMMCFMVBF(float multiplierWW=1, int flavor=0){
   float pvbfg1g2_pi2_VAJHU;
   float pvbfg1g4_VAJHU;
   float pvbfg1g4_pi2_VAJHU;
+
+  float pFullvbf0plus_VAJHU[11][11]={ { 0 } };
+  float pFullvbf0hplus_VAJHU[11][11]={ { 0 } };
+  float pFullvbf0minus_VAJHU[11][11]={ { 0 } };
+  float pFullvbf0_g1prime2_VAJHU[11][11]={ { 0 } };
+  float pFullvbfg1g1prime2_VAJHU[11][11]={ { 0 } };
+  float pFullvbfg1g1prime2_pi2_VAJHU[11][11]={ { 0 } };
+  float pFullvbfg1g2_VAJHU[11][11]={ { 0 } };
+  float pFullvbfg1g2_pi2_VAJHU[11][11]={ { 0 } };
+  float pFullvbfg1g4_VAJHU[11][11]={ { 0 } };
+  float pFullvbfg1g4_pi2_VAJHU[11][11]={ { 0 } };
 
   float p0plus_VAJHU;
   float p0hplus_VAJHU;
@@ -2104,6 +2126,27 @@ void testME_FullMELA_BSMMCFMVBF(float multiplierWW=1, int flavor=0){
   newtree->Branch("pvbfg1g2_pi2_VAMCFM", &pvbfg1g2_pi2_VAMCFM);
   newtree->Branch("pvbfg1g4_VAMCFM", &pvbfg1g4_VAMCFM);
   newtree->Branch("pvbfg1g4_pi2_VAMCFM", &pvbfg1g4_pi2_VAMCFM);
+
+  newtree->Branch("pFullvbf0plus_VAJHU", pFullvbf0plus_VAJHU,"pFullvbf0plus_VAJHU[11][11]/F");
+  newtree->Branch("pFullvbf0hplus_VAJHU", pFullvbf0hplus_VAJHU, "pFullvbf0hplus_VAJHU[11][11]/F");
+  newtree->Branch("pFullvbf0minus_VAJHU", pFullvbf0minus_VAJHU, "pFullvbf0minus_VAJHU[11][11]/F");
+  newtree->Branch("pFullvbf0_g1prime2_VAJHU", pFullvbf0_g1prime2_VAJHU, "pFullvbf0_g1prime2_VAJHU[11][11]/F");
+  newtree->Branch("pFullvbfg1g1prime2_VAJHU", pFullvbfg1g1prime2_VAJHU, "pFullvbfg1g1prime2_VAJHU[11][11]/F");
+  newtree->Branch("pFullvbfg1g1prime2_pi2_VAJHU", pFullvbfg1g1prime2_pi2_VAJHU, "pFullvbfg1g1prime2_pi2_VAJHU[11][11]/F");
+  newtree->Branch("pFullvbfg1g2_VAJHU", pFullvbfg1g2_VAJHU, "pFullvbfg1g2_VAJHU[11][11]/F");
+  newtree->Branch("pFullvbfg1g2_pi2_VAJHU", pFullvbfg1g2_pi2_VAJHU, "pFullvbfg1g2_pi2_VAJHU[11][11]/F");
+  newtree->Branch("pFullvbfg1g4_VAJHU", pFullvbfg1g4_VAJHU, "pFullvbfg1g4_VAJHU[11][11]/F");
+  newtree->Branch("pFullvbfg1g4_pi2_VAJHU", pFullvbfg1g4_pi2_VAJHU, "pFullvbfg1g4_pi2_VAJHU[11][11]/F");
+  newtree->Branch("pFullvbf0plus_VAMCFM", pFullvbf0plus_VAMCFM, "pFullvbf0plus_VAMCFM[11][11]/F");
+  newtree->Branch("pFullvbf0hplus_VAMCFM", pFullvbf0hplus_VAMCFM, "pFullvbf0hplus_VAMCFM[11][11]/F");
+  newtree->Branch("pFullvbf0minus_VAMCFM", pFullvbf0minus_VAMCFM, "pFullvbf0minus_VAMCFM[11][11]/F");
+  newtree->Branch("pFullvbf0_g1prime2_VAMCFM", pFullvbf0_g1prime2_VAMCFM, "pFullvbf0_g1prime2_VAMCFM[11][11]/F");
+  newtree->Branch("pFullvbfg1g1prime2_VAMCFM", pFullvbfg1g1prime2_VAMCFM, "pFullvbfg1g1prime2_VAMCFM[11][11]/F");
+  newtree->Branch("pFullvbfg1g1prime2_pi2_VAMCFM", pFullvbfg1g1prime2_pi2_VAMCFM, "pFullvbfg1g1prime2_pi2_VAMCFM[11][11]/F");
+  newtree->Branch("pFullvbfg1g2_VAMCFM", pFullvbfg1g2_VAMCFM, "pFullvbfg1g2_VAMCFM[11][11]/F");
+  newtree->Branch("pFullvbfg1g2_pi2_VAMCFM", pFullvbfg1g2_pi2_VAMCFM, "pFullvbfg1g2_pi2_VAMCFM[11][11]/F");
+  newtree->Branch("pFullvbfg1g4_VAMCFM", pFullvbfg1g4_VAMCFM, "pFullvbfg1g4_VAMCFM[11][11]/F");
+  newtree->Branch("pFullvbfg1g4_pi2_VAMCFM", pFullvbfg1g4_pi2_VAMCFM, "pFullvbfg1g4_pi2_VAMCFM[11][11]/F");
 
   newtree->Branch("ZZMass", &mzz);
   newtree->Branch("DijetMass", &DijetMass);
@@ -2280,6 +2323,13 @@ void testME_FullMELA_BSMMCFMVBF(float multiplierWW=1, int flavor=0){
       selfDHwwcoupl[0][0]=1.*multiplierWW;
       mela.computeProdP(jet1, 0, jet2, 0, higgs, 25, nullFourVector, 0, selfDHggcoupl, selfDHvvcoupl, selfDHwwcoupl, pvbf0plus_VAJHU);
       pvbf0plus_VAJHU *= p0plus_VAJHU;
+      me_record rcd_pvbf0plus_VAJHU = mela.getFullMERecord();
+      for (int xx=0; xx<11; xx++){
+        for (int yy=0; yy<11; yy++){
+          (rcd_pvbf0plus_VAJHU.MEsq)[xx][yy] *= p0plus_VAJHU;
+          (rcd_pvbf0plus_VAJHU.weightedMEsq)[xx][yy] *= p0plus_VAJHU;
+        }
+      }
 
 /*
       for (int xx = 0; xx < SIZE_HVV_VBF; xx++){ for (int yy = 0; yy < 2; yy++) selfDHvvcoupl[xx][yy] = 0; }
@@ -2303,6 +2353,14 @@ void testME_FullMELA_BSMMCFMVBF(float multiplierWW=1, int flavor=0){
       selfDHwwcoupl[11][0]=-12046.01*multiplierWW;
       mela.computeProdP(jet1, 0, jet2, 0, higgs, 25, nullFourVector, 0, selfDHggcoupl, selfDHvvcoupl, selfDHwwcoupl, pvbf0_g1prime2_VAJHU);
       pvbf0_g1prime2_VAJHU *= p0_g1prime2_VAJHU;
+      me_record rcd_pvbf0_g1prime2_VAJHU = mela.getFullMERecord();
+      for (int xx=0; xx<11; xx++){
+        for (int yy=0; yy<11; yy++){
+          (rcd_pvbf0_g1prime2_VAJHU.MEsq)[xx][yy] *= p0_g1prime2_VAJHU;
+          (rcd_pvbf0_g1prime2_VAJHU.weightedMEsq)[xx][yy] *= p0_g1prime2_VAJHU;
+        }
+      }
+
 
 /*
       for (int xx = 0; xx < SIZE_HVV_VBF; xx++){ for (int yy = 0; yy < 2; yy++) selfDHvvcoupl[xx][yy] = 0; }
@@ -2350,6 +2408,13 @@ void testME_FullMELA_BSMMCFMVBF(float multiplierWW=1, int flavor=0){
       selfDHwwcoupl[11][0]=-12046.01*multiplierWW;
       mela.computeProdP(jet1, 0, jet2, 0, higgs, 25, nullFourVector, 0, selfDHggcoupl, selfDHvvcoupl, selfDHwwcoupl, pvbfg1g1prime2_VAJHU);
       pvbfg1g1prime2_VAJHU *= pg1g1prime2_VAJHU;
+      me_record rcd_pvbfg1g1prime2_VAJHU = mela.getFullMERecord();
+      for (int xx=0; xx<11; xx++){
+        for (int yy=0; yy<11; yy++){
+          (rcd_pvbfg1g1prime2_VAJHU.MEsq)[xx][yy] *= pg1g1prime2_VAJHU;
+          (rcd_pvbfg1g1prime2_VAJHU.weightedMEsq)[xx][yy] *= pg1g1prime2_VAJHU;
+        }
+      }
 
       for (int xx = 0; xx < SIZE_HVV_VBF; xx++){ for (int yy = 0; yy < 2; yy++) selfDHvvcoupl[xx][yy] = 0; }
       for (int xx = 0; xx < SIZE_HWW_VBF; xx++){ for (int yy = 0; yy < 2; yy++) selfDHwwcoupl[xx][yy] = 0; }
@@ -2359,6 +2424,13 @@ void testME_FullMELA_BSMMCFMVBF(float multiplierWW=1, int flavor=0){
       selfDHwwcoupl[11][1]=-12046.01*multiplierWW;
       mela.computeProdP(jet1, 0, jet2, 0, higgs, 25, nullFourVector, 0, selfDHggcoupl, selfDHvvcoupl, selfDHwwcoupl, pvbfg1g1prime2_pi2_VAJHU);
       pvbfg1g1prime2_pi2_VAJHU *= pg1g1prime2_pi2_VAJHU;
+      me_record rcd_pvbfg1g1prime2_pi2_VAJHU = mela.getFullMERecord();
+      for (int xx=0; xx<11; xx++){
+        for (int yy=0; yy<11; yy++){
+          (rcd_pvbfg1g1prime2_pi2_VAJHU.MEsq)[xx][yy] *= pg1g1prime2_pi2_VAJHU;
+          (rcd_pvbfg1g1prime2_pi2_VAJHU.weightedMEsq)[xx][yy] *= pg1g1prime2_pi2_VAJHU;
+        }
+      }
 
 
 // VBF MCFM
@@ -2370,6 +2442,7 @@ void testME_FullMELA_BSMMCFMVBF(float multiplierWW=1, int flavor=0){
       selfDTotalHvvcoupl[0][0]=1;
       selfDTotalHwwcoupl[0][0]=1.*multiplierWW;
       mela.computeProdDecP(myjets, pZZ4LOrdered, myjetids, lepIdOrdered, selfDTotalHvvcoupl, selfDTotalHwwcoupl, pvbf0plus_VAMCFM);
+      me_record rcd_pvbf0plus_VAMCFM = mela.getFullMERecord();
 
 /*
       if (recorded==0) cout << "0h+ MCFM" << endl;
@@ -2391,6 +2464,7 @@ void testME_FullMELA_BSMMCFMVBF(float multiplierWW=1, int flavor=0){
       selfDTotalHvvcoupl[11][0]=-12046.01;
       selfDTotalHwwcoupl[11][0]=-12046.01*multiplierWW;
       mela.computeProdDecP(myjets, pZZ4LOrdered, myjetids, lepIdOrdered, selfDTotalHvvcoupl, selfDTotalHwwcoupl, pvbf0_g1prime2_VAMCFM);
+      me_record rcd_pvbf0_g1prime2_VAMCFM = mela.getFullMERecord();
 
 /*
       for (int xx = 0; xx < SIZE_HVV; xx++){ for (int yy = 0; yy < 2; yy++) selfDTotalHvvcoupl[xx][yy] = 0; }
@@ -2433,6 +2507,7 @@ void testME_FullMELA_BSMMCFMVBF(float multiplierWW=1, int flavor=0){
       selfDTotalHvvcoupl[11][0]=-12046.01;
       selfDTotalHwwcoupl[11][0]=-12046.01*multiplierWW;
       mela.computeProdDecP(myjets, pZZ4LOrdered, myjetids, lepIdOrdered, selfDTotalHvvcoupl, selfDTotalHwwcoupl, pvbfg1g1prime2_VAMCFM);
+      me_record rcd_pvbfg1g1prime2_VAMCFM = mela.getFullMERecord();
 
       for (int xx = 0; xx < SIZE_HVV; xx++){ for (int yy = 0; yy < 2; yy++) selfDTotalHvvcoupl[xx][yy] = 0; }
       for (int xx = 0; xx < SIZE_HVV; xx++){ for (int yy = 0; yy < 2; yy++) selfDTotalHwwcoupl[xx][yy] = 0; }
@@ -2441,6 +2516,7 @@ void testME_FullMELA_BSMMCFMVBF(float multiplierWW=1, int flavor=0){
       selfDTotalHvvcoupl[11][1]=-12046.01;
       selfDTotalHwwcoupl[11][1]=-12046.01*multiplierWW;
       mela.computeProdDecP(myjets, pZZ4LOrdered, myjetids, lepIdOrdered, selfDTotalHvvcoupl, selfDTotalHwwcoupl, pvbfg1g1prime2_pi2_VAMCFM);
+      me_record rcd_pvbfg1g1prime2_pi2_VAMCFM = mela.getFullMERecord();
 
 
       mela.setProcess(TVar::HSMHiggs, TVar::MCFM, TVar::ZZGG);
@@ -2575,6 +2651,63 @@ void testME_FullMELA_BSMMCFMVBF(float multiplierWW=1, int flavor=0){
       pvbfg1g2_pi2_VAMCFM/=pvbf0plus_VAMCFM;
       pvbfg1g4_VAMCFM/=pvbf0plus_VAMCFM;
       pvbfg1g4_pi2_VAMCFM/=pvbf0plus_VAMCFM;
+
+      for (int xx=0; xx<11; xx++){
+        for (int yy=0; yy<11; yy++){
+          pFullvbf0plus_VAJHU[xx][yy] = (rcd_pvbf0plus_VAJHU.MEsq)[xx][yy];
+          //pFullvbf0hplus_VAJHU[xx][yy] = (rcd_pvbf0hplus_VAJHU.MEsq)[xx][yy];
+          //pFullvbf0minus_VAJHU[xx][yy] = (rcd_pvbf0minus_VAJHU.MEsq)[xx][yy];
+          pFullvbf0_g1prime2_VAJHU[xx][yy] = (rcd_pvbf0_g1prime2_VAJHU.MEsq)[xx][yy];
+          /*pFullvbfg1g2_VAJHU[xx][yy] = (rcd_pvbfg1g2_VAJHU.MEsq)[xx][yy];
+          pFullvbfg1g2_pi2_VAJHU[xx][yy] = (rcd_pvbfg1g2_pi2_VAJHU.MEsq)[xx][yy];
+          pFullvbfg1g4_VAJHU[xx][yy] = (rcd_pvbfg1g4_VAJHU.MEsq)[xx][yy];
+          pFullvbfg1g4_pi2_VAJHU[xx][yy] = (rcd_pvbfg1g4_pi2_VAJHU.MEsq)[xx][yy];
+          */pFullvbfg1g1prime2_VAJHU[xx][yy] = (rcd_pvbfg1g1prime2_VAJHU.MEsq)[xx][yy];
+          pFullvbfg1g1prime2_pi2_VAJHU[xx][yy] = (rcd_pvbfg1g1prime2_pi2_VAJHU.MEsq)[xx][yy];
+          //pFullvbf0plus_VAMCFM[xx][yy] = (rcd_pvbf0plus_VAMCFM.MEsq)[xx][yy];
+          //pFullvbf0hplus_VAMCFM[xx][yy] = (rcd_pvbf0hplus_VAMCFM.MEsq)[xx][yy];
+          //pFullvbf0minus_VAMCFM[xx][yy] = (rcd_pvbf0minus_VAMCFM.MEsq)[xx][yy];
+          pFullvbf0_g1prime2_VAMCFM[xx][yy] = (rcd_pvbf0_g1prime2_VAMCFM.MEsq)[xx][yy];
+          /*pFullvbfg1g2_VAMCFM[xx][yy] = (rcd_pvbfg1g2_VAMCFM.MEsq)[xx][yy];
+          pFullvbfg1g2_pi2_VAMCFM[xx][yy] = (rcd_pvbfg1g2_pi2_VAMCFM.MEsq)[xx][yy];
+          pFullvbfg1g4_VAMCFM[xx][yy] = (rcd_pvbfg1g4_VAMCFM.MEsq)[xx][yy];
+          pFullvbfg1g4_pi2_VAMCFM[xx][yy] = (rcd_pvbfg1g4_pi2_VAMCFM.MEsq)[xx][yy];
+          */pFullvbfg1g1prime2_VAMCFM[xx][yy] = (rcd_pvbfg1g1prime2_VAMCFM.MEsq)[xx][yy];
+          pFullvbfg1g1prime2_pi2_VAMCFM[xx][yy] = (rcd_pvbfg1g1prime2_pi2_VAMCFM.MEsq)[xx][yy];
+
+          /*pFullvbfg1g2_VAJHU[xx][yy] -= (pFullvbf0plus_VAJHU[xx][yy] + pFullvbf0hplus_VAJHU[xx][yy]);
+          pFullvbfg1g2_pi2_VAJHU[xx][yy] -= (pFullvbf0plus_VAJHU[xx][yy] + pFullvbf0hplus_VAJHU[xx][yy]);
+          pFullvbfg1g4_VAJHU[xx][yy] -= (pFullvbf0plus_VAJHU[xx][yy] + pFullvbf0minus_VAJHU[xx][yy]);
+          pFullvbfg1g4_pi2_VAJHU[xx][yy] -= (pFullvbf0plus_VAJHU[xx][yy] + pFullvbf0minus_VAJHU[xx][yy]);
+          */pFullvbfg1g1prime2_VAJHU[xx][yy] -= (pFullvbf0plus_VAJHU[xx][yy] + pFullvbf0_g1prime2_VAJHU[xx][yy]);
+          pFullvbfg1g1prime2_pi2_VAJHU[xx][yy] -= (pFullvbf0plus_VAJHU[xx][yy] + pFullvbf0_g1prime2_VAJHU[xx][yy]);
+          /*pFullvbfg1g2_VAMCFM[xx][yy] -= (pFullvbf0plus_VAMCFM[xx][yy] + pFullvbf0hplus_VAMCFM[xx][yy]);
+          pFullvbfg1g2_pi2_VAMCFM[xx][yy] -= (pFullvbf0plus_VAMCFM[xx][yy] + pFullvbf0hplus_VAMCFM[xx][yy]);
+          pFullvbfg1g4_VAMCFM[xx][yy] -= (pFullvbf0plus_VAMCFM[xx][yy] + pFullvbf0minus_VAMCFM[xx][yy]);
+          pFullvbfg1g4_pi2_VAMCFM[xx][yy] -= (pFullvbf0plus_VAMCFM[xx][yy] + pFullvbf0minus_VAMCFM[xx][yy]);
+          */pFullvbfg1g1prime2_VAMCFM[xx][yy] -= (pFullvbf0plus_VAMCFM[xx][yy] + pFullvbf0_g1prime2_VAMCFM[xx][yy]);
+          pFullvbfg1g1prime2_pi2_VAMCFM[xx][yy] -= (pFullvbf0plus_VAMCFM[xx][yy] + pFullvbf0_g1prime2_VAMCFM[xx][yy]);
+
+          //pFullvbf0hplus_VAJHU[xx][yy]/=pFullvbf0plus_VAJHU[xx][yy];
+          //pFullvbf0minus_VAJHU[xx][yy]/=pFullvbf0plus_VAJHU[xx][yy];
+          pFullvbf0_g1prime2_VAJHU[xx][yy]/=pFullvbf0plus_VAJHU[xx][yy];
+          pFullvbfg1g1prime2_VAJHU[xx][yy]/=pFullvbf0plus_VAJHU[xx][yy];
+          pFullvbfg1g1prime2_pi2_VAJHU[xx][yy]/=pFullvbf0plus_VAJHU[xx][yy];
+          /*pFullvbfg1g2_VAJHU[xx][yy]/=pFullvbf0plus_VAJHU[xx][yy];
+          pFullvbfg1g2_pi2_VAJHU[xx][yy]/=pFullvbf0plus_VAJHU[xx][yy];
+          pFullvbfg1g4_VAJHU[xx][yy]/=pFullvbf0plus_VAJHU[xx][yy];
+          pFullvbfg1g4_pi2_VAJHU[xx][yy]/=pFullvbf0plus_VAJHU[xx][yy];
+          pFullvbf0hplus_VAMCFM[xx][yy]/=pFullvbf0plus_VAMCFM[xx][yy];
+          pFullvbf0minus_VAMCFM[xx][yy]/=pFullvbf0plus_VAMCFM[xx][yy];
+          */pFullvbf0_g1prime2_VAMCFM[xx][yy]/=pFullvbf0plus_VAMCFM[xx][yy];
+          pFullvbfg1g1prime2_VAMCFM[xx][yy]/=pFullvbf0plus_VAMCFM[xx][yy];
+          pFullvbfg1g1prime2_pi2_VAMCFM[xx][yy]/=pFullvbf0plus_VAMCFM[xx][yy];
+          /*pFullvbfg1g2_VAMCFM[xx][yy]/=pFullvbf0plus_VAMCFM[xx][yy];
+          pFullvbfg1g2_pi2_VAMCFM[xx][yy]/=pFullvbf0plus_VAMCFM[xx][yy];
+          pFullvbfg1g4_VAMCFM[xx][yy]/=pFullvbf0plus_VAMCFM[xx][yy];
+          pFullvbfg1g4_pi2_VAMCFM[xx][yy]/=pFullvbf0plus_VAMCFM[xx][yy];
+        */}
+      }
 
       newtree->Fill();
       recorded++;

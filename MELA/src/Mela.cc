@@ -24,6 +24,7 @@
 #include <cstdio>
 #include <unistd.h>
 #include <sys/stat.h>
+#include <sys/stat.h>
 #include <sys/types.h>
 
 
@@ -793,6 +794,10 @@ float Mela::getConstant(int flavor, float mZZ, bool useOldggZZConstants){
 
   return constant;
 }
+
+MelaOutputRecord Mela::getFullMERecord(){
+  return ZZME->get_FullMERecord();
+} // Full parton-by-parton ME record (11x11 matrix of MEs + 2 parton luminosity arrays of size 11)
 
 void Mela::computeP(
   float mZZ, float mZ1, float mZ2, // input kinematics

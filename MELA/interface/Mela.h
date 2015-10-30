@@ -6,8 +6,8 @@
 #include <TRandom3.h>
 
 
-class TFile; 
-class TH1F; 
+class TFile;
+class TH1F;
 class TH2F;
 class TH3F;
 class RooRealVar;
@@ -27,6 +27,7 @@ class SuperMELA;
 #include <ZZMatrixElement/MELA/src/VectorPdfFactory.h>
 #include <ZZMatrixElement/MELA/src/TensorPdfFactory.h>
 #include <ZZMatrixElement/MELA/src/RooqqZZ_JHU_ZgammaZZ_fast.h>
+
 
 class Mela{
 
@@ -191,6 +192,7 @@ public:
     );
 
   void get_PAux(float& prob){ prob = auxiliaryProb; }; // SuperProb
+  MelaOutputRecord getFullMERecord(); // Full parton-by-parton ME record (11x11 matrix of MEs + 2 parton luminosity arrays of size 11)
 
   void computePM4l(float mZZ,
 		TVar::LeptonFlavor flavor,
