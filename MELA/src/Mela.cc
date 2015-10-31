@@ -24,7 +24,6 @@
 #include <cstdio>
 #include <unistd.h>
 #include <sys/stat.h>
-#include <sys/stat.h>
 #include <sys/types.h>
 
 
@@ -264,43 +263,6 @@ void Mela::computeD_CP(float mZZ, float mZ1, float mZ2, // input kinematics
            float& prob){
   reset_PAux();
 
-
-/******** No analytical for D_CP_T and D_Int_T, ME has no imaginary part now! Only work for JHUGen *******/
-// float pMix, p0plus, p_star;
-// TVar::Process mixProcess , starProcess;
-//
-//if(myType == TVar::D_g1g4) { mixProcess = TVar::CPMixHZZ_4l; starProcess = TVar::PSHZZ_g4star;}
-//else if(myType == TVar::D_g1g4_pi_2) { mixProcess = TVar::CPMixHZZ_4l_pi_2; starProcess = TVar::PSHZZ_g4star;}
-//else if(myType == TVar::D_g1g2) { mixProcess = TVar::HDMixHZZ_4l; starProcess = TVar::HDHZZ_4l_g2star;}
-//else if(myType == TVar::D_g1g2_pi_2) { mixProcess = TVar::HDMixHZZ_4l_pi_2; starProcess = TVar::HDHZZ_4l_g2star;}
-//else{
-// cout<<"Interaction type not supported!"<<endl;
-// return;
-//}
-// setProcess( mixProcess, myME, TVar::ZZGG);
-// computeP(mZZ, mZ1, mZ2,
-//        costhetastar,costheta1,costheta2,phi,phi1,flavor,
-//        pMix);
-//
-// setProcess(TVar::HSMHiggs, myME, TVar::ZZGG);
-// computeP(mZZ, mZ1, mZ2,
-//        costhetastar,costheta1,costheta2,phi,phi1,flavor,
-//        p0plus);
-//
-// setProcess(starProcess,myME, TVar::ZZGG);
-// computeP(mZZ, mZ1, mZ2,
-//        costhetastar,costheta1,costheta2,phi,phi1,flavor,
-//        p_star);
-//  prob = pMix- p0plus- p_star;
-//
-
-// setProcess(TVar::H0minus, myME, TVar::ZZGG);
-// computeP(mZZ, mZ1, mZ2,
-//        costhetastar,costheta1,costheta2,phi,phi1,flavor,
-//        p0minus);                                        
-
-//prob = (p0minus_plus - p0minus_g4star - p0plus ) / (p0minus + p0plus);
-
 double coupl_mix[SIZE_HVV][2] = {{ 0 }};
 double coupl_1[SIZE_HVV][2] = {{ 0 }};
 double coupl_2[SIZE_HVV][2] = {{ 0 }};
@@ -442,8 +404,6 @@ void Mela::computeP(float mZZ, float mZ1, float mZ2, // input kinematics
     }
     else prob = -99.0;
   }
-
-  //cout << "Mela::computeP() - I am out!!" << endl;
 
   //
   // JHUGen or MCFM 
@@ -795,9 +755,8 @@ float Mela::getConstant(int flavor, float mZZ, bool useOldggZZConstants){
   return constant;
 }
 
-MelaOutputRecord Mela::getFullMERecord(){
-  return ZZME->get_FullMERecord();
-} // Full parton-by-parton ME record (11x11 matrix of MEs + 2 parton luminosity arrays of size 11)
+// Full parton-by-parton ME record (11x11 matrix of MEs + 2 parton luminosity arrays of size 11)
+MelaOutputRecord Mela::getFullMERecord(){ return ZZME->get_FullMERecord(); }
 
 void Mela::computeP(
   float mZZ, float mZ1, float mZ2, // input kinematics
@@ -908,166 +867,164 @@ void Mela::computeP(
 
 }
 void Mela::computeP_selfDspin2(float mZZ, float mZ1, float mZ2, // input kinematics
-        float costhetastar,
-        float costheta1,
-        float costheta2,
-        float phi,
-        float phi1,
-        int flavor,
-        double selfDGggcoupl[SIZE_GGG][2],
-        double selfDGvvcoupl[SIZE_GVV][2], 
-        float& prob){
-   reset_PAux();
-
-   double couplingvals_NOTggZZ[SIZE_HVV_FREENORM] = { 0 };
-   double selfDHvvcoupl[SIZE_HVV][2] = { { 0 } };
-   double selfDGqqcoupl[SIZE_GQQ][2] = { { 0 } };
-   double selfDZqqcoupl[SIZE_ZQQ][2] = { { 0 } };
-   double selfDZvvcoupl[SIZE_ZVV][2] = { { 0 } };
-
-	 if(myModel_ != TVar::SelfDefine_spin2){
-	  cout << " Error: This method only applies to spin2, set Process to SelfDefine_spin2!"<<endl;
-	  return;
-	 }
-  if ( myME_ == TVar::JHUGen){
-
-
-    //initialize variables
-    checkZorder(mZ1,mZ2,costhetastar,costheta1,costheta2,phi,phi1);
-    ZZME->computeXS(mZZ,mZ1,mZ2,
-        costhetastar,costheta1,costheta2,
-        phi, phi1, flavor,
-        myModel_, myME_,  myProduction_, couplingvals_NOTggZZ,
-           selfDHvvcoupl,
-           selfDZqqcoupl,
-           selfDZvvcoupl,
-           selfDGqqcoupl,
-           selfDGggcoupl,
-           selfDGvvcoupl, prob);
-  }
- else if (myME_ == TVar::ANALYTICAL){
-
-  costhetastar_rrv->setVal(costhetastar);
-  costheta1_rrv->setVal(costheta1);
-  costheta2_rrv->setVal(costheta2);
-  phi_rrv->setVal(phi);
-  phi1_rrv->setVal(phi1);
-     
-   z1mass_rrv->setVal(mZ1);
-   z2mass_rrv->setVal(mZ2);
-   mzz_rrv->setVal(mZZ);
-
- for (int i =0 ;i<SIZE_GVV;i++){
-    if(selfDGvvcoupl[i][1]!=0){
-      cout << "Error: MELA does not support complex coupling for the moment! "<<endl;
-      return;
-    }
-  }
-	
-if(myProduction_ == TVar::ZZGG || myProduction_==TVar::ZZINDEPENDENT){
-  spin2Model->fz1Val->setVal(0.);
-  spin2Model->fz2Val->setVal(1.);
-}
-if(myProduction_ == TVar::ZZQQB ){
-  spin2Model->fz1Val->setVal(1.);
-  spin2Model->fz2Val->setVal(0.);
-}
-  spin2Model->g1Val->setVal(selfDGvvcoupl[0][0]);
-  spin2Model->g2Val->setVal(selfDGvvcoupl[1][0]);
-  spin2Model->g3Val->setVal(selfDGvvcoupl[2][0]);
-  spin2Model->g4Val->setVal(selfDGvvcoupl[3][0]);
-  spin2Model->g5Val->setVal(selfDGvvcoupl[4][0]);
-  spin2Model->g6Val->setVal(selfDGvvcoupl[5][0]);
-  spin2Model->g7Val->setVal(selfDGvvcoupl[6][0]);
-  spin2Model->g8Val->setVal(selfDGvvcoupl[7][0]);
-  spin2Model->g9Val->setVal(selfDGvvcoupl[8][0]);
-  spin2Model->g10Val->setVal(selfDGvvcoupl[9][0]);
-	
-	spin2Model->calculatefz2();
-
- if(myProduction_==TVar::ZZINDEPENDENT){
-  RooAbsPdf* integral = (RooAbsPdf*) pdf->createIntegral(RooArgSet(*costhetastar_rrv,*phi1_rrv));
-  prob = integral->getVal();
-  delete integral;
-      }else{
-  prob = pdf->getVal();
-      }
-}
-
-else cout<<"ERROR: this method only works for JHUGen and ANALYTICAL";
-
-}
-void Mela::computeP_selfDspin1(float mZZ, float mZ1, float mZ2, // input kinematics
-        float costhetastar,
-        float costheta1,
-        float costheta2,
-        float phi,
-        float phi1,
-        int flavor,
-        double selfDZvvcoupl[SIZE_ZVV][2],
-        float& prob){
+  float costhetastar,
+  float costheta1,
+  float costheta2,
+  float phi,
+  float phi1,
+  int flavor,
+  double selfDGggcoupl[SIZE_GGG][2],
+  double selfDGvvcoupl[SIZE_GVV][2],
+  float& prob){
   reset_PAux();
 
-	double couplingvals_NOTggZZ[SIZE_HVV_FREENORM] = { 0 };
-	double selfDHvvcoupl[SIZE_HVV][2] = { { 0 } };
-	double selfDGqqcoupl[SIZE_GQQ][2] = { { 0 } }; 
-	double selfDGggcoupl[SIZE_GGG][2] = { { 0 } };
-	double selfDGvvcoupl[SIZE_GVV][2] = { { 0 } };
-	double selfDZqqcoupl[SIZE_ZQQ][2] = { { 0 } };
+  double couplingvals_NOTggZZ[SIZE_HVV_FREENORM] ={ 0 };
+  double selfDHvvcoupl[SIZE_HVV][2] ={ { 0 } };
+  double selfDGqqcoupl[SIZE_GQQ][2] ={ { 0 } };
+  double selfDZqqcoupl[SIZE_ZQQ][2] ={ { 0 } };
+  double selfDZvvcoupl[SIZE_ZVV][2] ={ { 0 } };
 
- if(myModel_ != TVar::SelfDefine_spin1){
-  cout << " Error: This method only applies to spin1, set Process to SelfDefine_spin1!"<<endl;
-  return;
- }
-  if ( myME_ == TVar::JHUGen){
-
+  if (myModel_ != TVar::SelfDefine_spin2){
+    cout << " Error: This method only applies to spin2, set Process to SelfDefine_spin2!" << endl;
+    return;
+  }
+  if (myME_ == TVar::JHUGen){
 
     //initialize variables
-    checkZorder(mZ1,mZ2,costhetastar,costheta1,costheta2,phi,phi1);
-    ZZME->computeXS(mZZ,mZ1,mZ2,
-        costhetastar,costheta1,costheta2,
-        phi, phi1, flavor,
-        myModel_, myME_,  myProduction_, couplingvals_NOTggZZ, 
-		selfDHvvcoupl,
-        selfDZqqcoupl,
-        selfDZvvcoupl,
-        selfDGqqcoupl,
-        selfDGggcoupl,
-        selfDGvvcoupl,
-		prob
-		);
+    checkZorder(mZ1, mZ2, costhetastar, costheta1, costheta2, phi, phi1);
+    ZZME->computeXS(mZZ, mZ1, mZ2,
+      costhetastar, costheta1, costheta2,
+      phi, phi1, flavor,
+      myModel_, myME_, myProduction_, couplingvals_NOTggZZ,
+      selfDHvvcoupl,
+      selfDZqqcoupl,
+      selfDZvvcoupl,
+      selfDGqqcoupl,
+      selfDGggcoupl,
+      selfDGvvcoupl, prob);
   }
-else if (myME_ == TVar::ANALYTICAL){
-  costhetastar_rrv->setVal(costhetastar);
-  costheta1_rrv->setVal(costheta1);
-  costheta2_rrv->setVal(costheta2);
-  phi_rrv->setVal(phi);
-  phi1_rrv->setVal(phi1);
-     
-   z1mass_rrv->setVal(mZ1);
-   z2mass_rrv->setVal(mZ2);
-   mzz_rrv->setVal(mZZ);
+  else if (myME_ == TVar::ANALYTICAL){
 
- for (int i =0 ;i<SIZE_ZVV;i++){
-    if(selfDZvvcoupl[i][1]!=0){
-      cout << "Error: MELA does not support complex coupling for the moment! "<<endl;
-      return;
+    costhetastar_rrv->setVal(costhetastar);
+    costheta1_rrv->setVal(costheta1);
+    costheta2_rrv->setVal(costheta2);
+    phi_rrv->setVal(phi);
+    phi1_rrv->setVal(phi1);
+
+    z1mass_rrv->setVal(mZ1);
+    z2mass_rrv->setVal(mZ2);
+    mzz_rrv->setVal(mZZ);
+
+    for (int i =0; i<SIZE_GVV; i++){
+      if (selfDGvvcoupl[i][1]!=0){
+        cout << "Error: MELA does not support complex coupling for the moment!" << endl;
+        return;
+      }
+    }
+
+    if (myProduction_ == TVar::ZZGG || myProduction_==TVar::ZZINDEPENDENT){
+      spin2Model->fz1Val->setVal(0.);
+      spin2Model->fz2Val->setVal(1.);
+    }
+    if (myProduction_ == TVar::ZZQQB){
+      spin2Model->fz1Val->setVal(1.);
+      spin2Model->fz2Val->setVal(0.);
+    }
+    spin2Model->g1Val->setVal(selfDGvvcoupl[0][0]);
+    spin2Model->g2Val->setVal(selfDGvvcoupl[1][0]);
+    spin2Model->g3Val->setVal(selfDGvvcoupl[2][0]);
+    spin2Model->g4Val->setVal(selfDGvvcoupl[3][0]);
+    spin2Model->g5Val->setVal(selfDGvvcoupl[4][0]);
+    spin2Model->g6Val->setVal(selfDGvvcoupl[5][0]);
+    spin2Model->g7Val->setVal(selfDGvvcoupl[6][0]);
+    spin2Model->g8Val->setVal(selfDGvvcoupl[7][0]);
+    spin2Model->g9Val->setVal(selfDGvvcoupl[8][0]);
+    spin2Model->g10Val->setVal(selfDGvvcoupl[9][0]);
+
+    spin2Model->calculatefz2();
+
+    if (myProduction_==TVar::ZZINDEPENDENT){
+      RooAbsPdf* integral = (RooAbsPdf*)pdf->createIntegral(RooArgSet(*costhetastar_rrv, *phi1_rrv));
+      prob = integral->getVal();
+      delete integral;
+    }
+    else{
+      prob = pdf->getVal();
     }
   }
-  spin1Model->g1Val->setVal(selfDZvvcoupl[0][0]);
-  spin1Model->g2Val->setVal(selfDZvvcoupl[1][0]);
- if(myProduction_==TVar::ZZINDEPENDENT){
-  RooAbsPdf* integral = (RooAbsPdf*) pdf->createIntegral(RooArgSet(*costhetastar_rrv,*phi1_rrv));
-  prob = integral->getVal();
-  delete integral;
-      }else{
-  prob = pdf->getVal();
+  else cout << "ERROR: this method only works for JHUGen and ANALYTICAL" << endl;
+}
+
+void Mela::computeP_selfDspin1(float mZZ, float mZ1, float mZ2, // input kinematics
+  float costhetastar,
+  float costheta1,
+  float costheta2,
+  float phi,
+  float phi1,
+  int flavor,
+  double selfDZvvcoupl[SIZE_ZVV][2],
+  float& prob){
+  reset_PAux();
+
+  double couplingvals_NOTggZZ[SIZE_HVV_FREENORM] ={ 0 };
+  double selfDHvvcoupl[SIZE_HVV][2] ={ { 0 } };
+  double selfDGqqcoupl[SIZE_GQQ][2] ={ { 0 } };
+  double selfDGggcoupl[SIZE_GGG][2] ={ { 0 } };
+  double selfDGvvcoupl[SIZE_GVV][2] ={ { 0 } };
+  double selfDZqqcoupl[SIZE_ZQQ][2] ={ { 0 } };
+
+  if (myModel_ != TVar::SelfDefine_spin1){
+    cout << " Error: This method only applies to spin1, set Process to SelfDefine_spin1!" << endl;
+    return;
+  }
+  if (myME_ == TVar::JHUGen){
+
+    //initialize variables
+    checkZorder(mZ1, mZ2, costhetastar, costheta1, costheta2, phi, phi1);
+    ZZME->computeXS(mZZ, mZ1, mZ2,
+      costhetastar, costheta1, costheta2,
+      phi, phi1, flavor,
+      myModel_, myME_, myProduction_, couplingvals_NOTggZZ,
+      selfDHvvcoupl,
+      selfDZqqcoupl,
+      selfDZvvcoupl,
+      selfDGqqcoupl,
+      selfDGggcoupl,
+      selfDGvvcoupl,
+      prob
+      );
+  }
+  else if (myME_ == TVar::ANALYTICAL){
+    costhetastar_rrv->setVal(costhetastar);
+    costheta1_rrv->setVal(costheta1);
+    costheta2_rrv->setVal(costheta2);
+    phi_rrv->setVal(phi);
+    phi1_rrv->setVal(phi1);
+
+    z1mass_rrv->setVal(mZ1);
+    z2mass_rrv->setVal(mZ2);
+    mzz_rrv->setVal(mZZ);
+
+    for (int i =0; i<SIZE_ZVV; i++){
+      if (selfDZvvcoupl[i][1]!=0){
+        cout << "Error: MELA does not support complex coupling for the moment!" << endl;
+        return;
       }
+    }
+    spin1Model->g1Val->setVal(selfDZvvcoupl[0][0]);
+    spin1Model->g2Val->setVal(selfDZvvcoupl[1][0]);
+    if (myProduction_==TVar::ZZINDEPENDENT){
+      RooAbsPdf* integral = (RooAbsPdf*)pdf->createIntegral(RooArgSet(*costhetastar_rrv, *phi1_rrv));
+      prob = integral->getVal();
+      delete integral;
+    }
+    else{
+      prob = pdf->getVal();
+    }
+  }
+  else cout << "ERROR: this method only works for JHUGen and ANALYTICAL" << endl;
 }
 
-else cout<<"ERROR: this method only works for JHUGen and ANALYTICAL";
-
-}
 void Mela::computeP(float mZZ, float mZ1, float mZ2, // input kinematics
   float costhetastar,
   float costheta1,
@@ -1107,11 +1064,11 @@ void Mela::computeP(float mZZ, float mZ1, float mZ2, // input kinematics
 }
 
 void Mela::computeP(TLorentzVector Z1_lept1, int Z1_lept1Id,  // input 4-vectors
-		    TLorentzVector Z1_lept2, int Z1_lept2Id,  // 
-		    TLorentzVector Z2_lept1, int Z2_lept1Id,
-		    TLorentzVector Z2_lept2, int Z2_lept2Id,
-		    float& prob){                             // output probability
-    
+  TLorentzVector Z1_lept2, int Z1_lept2Id,  // 
+  TLorentzVector Z2_lept1, int Z2_lept1Id,
+  TLorentzVector Z2_lept2, int Z2_lept2Id,
+  float& prob){                             // output probability
+
   // get flavor type
   // NEED TO INCLUDE SOME PROTECTION SO THAT USER CANT                  
   // PASS FOUR-VECTORS IN WRONG ORDER.  FOR NOW ASSUMING                
@@ -1119,104 +1076,104 @@ void Mela::computeP(TLorentzVector Z1_lept1, int Z1_lept1Id,  // input 4-vectors
   // ------------------ channel ------------------------                
 
   if (mela::forbidMassiveLeptons){
-    mela::constrainedRemoveLeptonMass(Z1_lept1,Z1_lept2);
-    mela::constrainedRemoveLeptonMass(Z2_lept1,Z2_lept2);
+    mela::constrainedRemoveLeptonMass(Z1_lept1, Z1_lept2);
+    mela::constrainedRemoveLeptonMass(Z2_lept1, Z2_lept2);
   }
 
   int flavor;
 
-  if(abs(Z1_lept1Id)==abs(Z1_lept2Id)&&
-     abs(Z1_lept1Id)==abs(Z2_lept1Id)&&
-     abs(Z1_lept1Id)==abs(Z2_lept2Id)){
+  if (abs(Z1_lept1Id)==abs(Z1_lept2Id)&&
+    abs(Z1_lept1Id)==abs(Z2_lept1Id)&&
+    abs(Z1_lept1Id)==abs(Z2_lept2Id)){
 
-    if(abs(Z1_lept1Id)==11) flavor=1;
+    if (abs(Z1_lept1Id)==11) flavor=1;
     else flavor=2;
 
-  }else flavor=3;
+  }
+  else flavor=3;
 
   //compute angles  
   float m1=(Z1_lept1 + Z1_lept2).M();
   float m2=(Z2_lept1 + Z2_lept2).M();
-    
+
   TLorentzVector ZZ = (Z1_lept1 + Z1_lept2 + Z2_lept1 + Z2_lept2);
   float mzz = ZZ.M();
-    
+
   // Skip candidates where KD is irrelevant.
-//  if (mzz<100.){
-//    prob = -99.0;
-//    return;
-//  }
+  //if (mzz<100.){
+  //  prob = -99.0;
+  //  return;
+  //}
 
   float costhetastar, costheta1, costheta2, phi, phi1;
 
-  mela::computeAngles(Z1_lept1, Z1_lept1Id, Z1_lept2, Z1_lept2Id, 
-		      Z2_lept1, Z2_lept1Id, Z2_lept2, Z2_lept2Id,
-		      costhetastar,costheta1,costheta2,phi,phi1);
+  mela::computeAngles(Z1_lept1, Z1_lept1Id, Z1_lept2, Z1_lept2Id,
+    Z2_lept1, Z2_lept1Id, Z2_lept2, Z2_lept2Id,
+    costhetastar, costheta1, costheta2, phi, phi1);
 
   computeP(mzz, m1, m2,
-	   costhetastar,
-	   costheta1,
-	   costheta2,
-	   phi,phi1,
-	   flavor,
-	   prob);
+    costhetastar,
+    costheta1,
+    costheta2,
+    phi, phi1,
+    flavor,
+    prob);
 
 }
 
 void Mela::computeP(TLorentzVector Z1_lept1, int Z1_lept1Id,  // input 4-vectors
-		    TLorentzVector Z1_lept2, int Z1_lept2Id,  // 
-		    TLorentzVector Z2_lept1, int Z2_lept1Id,
-		    TLorentzVector Z2_lept2, int Z2_lept2Id,
-		    double couplingvals[SIZE_HVV_FREENORM],
-		    float& prob){                             // output probability
+  TLorentzVector Z1_lept2, int Z1_lept2Id,  // 
+  TLorentzVector Z2_lept1, int Z2_lept1Id,
+  TLorentzVector Z2_lept2, int Z2_lept2Id,
+  double couplingvals[SIZE_HVV_FREENORM],
+  float& prob){                             // output probability
 
   if (mela::forbidMassiveLeptons){
-    mela::constrainedRemoveLeptonMass(Z1_lept1,Z1_lept2);
-    mela::constrainedRemoveLeptonMass(Z2_lept1,Z2_lept2);
+    mela::constrainedRemoveLeptonMass(Z1_lept1, Z1_lept2);
+    mela::constrainedRemoveLeptonMass(Z2_lept1, Z2_lept2);
   }
 
-  if(myME_==TVar::JHUGen && myModel_==TVar::bkgZZ_SMHiggs){
+  if (myME_==TVar::JHUGen && myModel_==TVar::bkgZZ_SMHiggs){
     int flavor;
-    
-    if(abs(Z1_lept1Id)==abs(Z1_lept2Id)&&
-       abs(Z1_lept1Id)==abs(Z2_lept1Id)&&
-       abs(Z1_lept1Id)==abs(Z2_lept2Id)){
-      
-      if(abs(Z1_lept1Id)==11) flavor=1;
+
+    if (abs(Z1_lept1Id)==abs(Z1_lept2Id)&&
+      abs(Z1_lept1Id)==abs(Z2_lept1Id)&&
+      abs(Z1_lept1Id)==abs(Z2_lept2Id)){
+
+      if (abs(Z1_lept1Id)==11) flavor=1;
       else flavor=2;
-      
-    }else flavor=3;
-    
+
+    }
+    else flavor=3;
+
     //compute angles  
     float m1=(Z1_lept1 + Z1_lept2).M();
     float m2=(Z2_lept1 + Z2_lept2).M();
-    
+
     TLorentzVector ZZ = (Z1_lept1 + Z1_lept2 + Z2_lept1 + Z2_lept2);
     float mzz = ZZ.M();
-    
+
     // Skip candidates where KD is irrelevant.
-   // if (mzz<100.){
-   //   prob = -99.0;
-   //   return;
-   // }
-    
+    //if (mzz<100.){
+    //  prob = -99.0;
+    //  return;
+    //}
+
     float costhetastar, costheta1, costheta2, phi, phi1;
-    
-    mela::computeAngles(Z1_lept1, Z1_lept1Id, Z1_lept2, Z1_lept2Id, 
-			Z2_lept1, Z2_lept1Id, Z2_lept2, Z2_lept2Id,
-			costhetastar,costheta1,costheta2,phi,phi1);
-    
+
+    mela::computeAngles(Z1_lept1, Z1_lept1Id, Z1_lept2, Z1_lept2Id,
+      Z2_lept1, Z2_lept1Id, Z2_lept2, Z2_lept2Id,
+      costhetastar, costheta1, costheta2, phi, phi1);
+
     computeP(mzz, m1, m2,
-	     costhetastar,
-	     costheta1,
-	     costheta2,
-	     phi,phi1,
-	     flavor,couplingvals,
-	     prob);
+      costhetastar,
+      costheta1,
+      costheta2,
+      phi, phi1,
+      flavor, couplingvals,
+      prob);
   }
-  else{
-  }
-  
+
 }
 
 
@@ -1281,13 +1238,13 @@ void Mela::computeProdDecP(
 
 
 void Mela::computeProdP(TLorentzVector Jet1, int Jet1_Id,
-        TLorentzVector Jet2, int Jet2_Id,
-        TLorentzVector Decay1, int Decay1_Id,
-        TLorentzVector Decay2, int Decay2_Id,
-        double selfDHggcoupl[SIZE_HGG][2],
-        double selfDHvvcoupl[SIZE_HVV_VBF][2],
-        double selfDHwwcoupl[SIZE_HWW_VBF][2],
-        float& prob){
+  TLorentzVector Jet2, int Jet2_Id,
+  TLorentzVector Decay1, int Decay1_Id,
+  TLorentzVector Decay2, int Decay2_Id,
+  double selfDHggcoupl[SIZE_HGG][2],
+  double selfDHvvcoupl[SIZE_HVV_VBF][2],
+  double selfDHwwcoupl[SIZE_HWW_VBF][2],
+  float& prob){
   reset_PAux();
   bool isJet2Fake = false;
 
@@ -1319,8 +1276,8 @@ void Mela::computeProdP(TLorentzVector Jet1, int Jet1_Id,
     mela::computeFakeJet(jet1massless, higgs, jet2massless);
     isJet2Fake=true;
   }
-/*
-  cout << "MELA:"
+  /*
+    cout << "MELA:"
     << " Higgs Pz: " <<  higgs.Pz()
     << " Higgs P: " <<  higgs.P()
     << " Higgs E: " <<  higgs.T()
@@ -1330,12 +1287,12 @@ void Mela::computeProdP(TLorentzVector Jet1, int Jet1_Id,
     << " Jet 2 Pz: " <<  jet2massless.Pz()
     << " Jet 2 P: " <<  jet2massless.P()
     << " Jet 2 E: " <<  jet2massless.T() << endl;
-*/
+    */
 
-//  if (myProduction_ == TVar::JH) cout << "Massless jet 2 E: " << jet2massless.T() << ", p: " << jet2massless.P() << endl;
+  //if (myProduction_ == TVar::JH) cout << "Massless jet 2 E: " << jet2massless.T() << ", p: " << jet2massless.P() << endl;
   if (isJet2Fake){
-//    cout << "Jet is fake" << endl;
-//    int n_MEcomp=0;
+    //cout << "Jet is fake" << endl;
+    //int n_MEcomp=0;
 
     int nGrid=11;
     std::vector<double> etaArray;
@@ -1358,19 +1315,19 @@ void Mela::computeProdP(TLorentzVector Jet1, int Jet1_Id,
       double jet2temp_pz = jet2massless.Pt()*jet2temp_sinh_eta;
       jet2massless_temp.SetZ(jet2temp_pz);
       jet2massless_temp.SetX(jet2massless.X()); jet2massless_temp.SetY(jet2massless.Y()); jet2massless_temp.SetT(jet2massless_temp.P());
-/*
-      cout << "MELA:"
-      << " Higgs Pz: " <<  higgs_temp.Pz()
-      << " Higgs P: " <<  higgs_temp.P()
-      << " Higgs E: " <<  higgs_temp.T()
-      << " Jet 1 Pz: " <<  jet1massless_temp.Pz()
-      << " Jet 1 P: " <<  jet1massless_temp.P()
-      << " Jet 1 E: " <<  jet1massless_temp.T()
-      << " Jet 2 Pz: " <<  jet2massless_temp.Pz()
-      << " Jet 2 P: " <<  jet2massless_temp.P()
-      << " Jet 2 Pt: " <<  jet2massless_temp.Pt()
-      << " Jet 2 E: " <<  jet2massless_temp.T() << endl;
-*/
+      /*
+            cout << "MELA:"
+            << " Higgs Pz: " <<  higgs_temp.Pz()
+            << " Higgs P: " <<  higgs_temp.P()
+            << " Higgs E: " <<  higgs_temp.T()
+            << " Jet 1 Pz: " <<  jet1massless_temp.Pz()
+            << " Jet 1 P: " <<  jet1massless_temp.P()
+            << " Jet 1 E: " <<  jet1massless_temp.T()
+            << " Jet 2 Pz: " <<  jet2massless_temp.Pz()
+            << " Jet 2 P: " <<  jet2massless_temp.P()
+            << " Jet 2 Pt: " <<  jet2massless_temp.Pt()
+            << " Jet 2 E: " <<  jet2massless_temp.T() << endl;
+            */
       TLorentzVector total_temp=jet1massless_temp+jet2massless_temp+higgs_temp;
       jet1massless_temp.Boost(-total_temp.BoostVector().x(), -total_temp.BoostVector().y(), 0);
       jet2massless_temp.Boost(-total_temp.BoostVector().x(), -total_temp.BoostVector().y(), 0);
@@ -1383,7 +1340,7 @@ void Mela::computeProdP(TLorentzVector Jet1, int Jet1_Id,
         prob_temp
         );
       pArray.push_back((double)prob_temp);
-//      n_MEcomp++;
+      //n_MEcomp++;
     }
 
     double* xGrid;
@@ -1422,8 +1379,8 @@ void Mela::computeProdP(TLorentzVector Jet1, int Jet1_Id,
         iG++; // Pass to next bin
       }
       else{
-//        cout << "Spline: " << y_sp << "\tmean: " << y_middle << endl;
-//        cout << "Current precision: " << fabs(y_sp-y_middle)/fabs(y_middle) << endl;
+        //cout << "Spline: " << y_sp << "\tmean: " << y_middle << endl;
+        //cout << "Current precision: " << fabs(y_sp-y_middle)/fabs(y_middle) << endl;
 
         float prob_temp=-1;
         TLorentzVector higgs_temp;
@@ -1451,10 +1408,10 @@ void Mela::computeProdP(TLorentzVector Jet1, int Jet1_Id,
           selfDHwwcoupl,
           prob_temp
           );
-//        if (ctr_iter>140 && ctr_iter<165){
-//          cout << iG << '\t' << jet2temp_eta << '\t' << prob_temp << endl;
-//        }
-//        n_MEcomp++;
+        //if (ctr_iter>140 && ctr_iter<165){
+        //  cout << iG << '\t' << jet2temp_eta << '\t' << prob_temp << endl;
+        //}
+        //n_MEcomp++;
         gridIt = pArray.begin()+iG+1;
         pArray.insert(gridIt, (double)prob_temp);
         iG--; // Do not pass to next bin, repeat until precision is achieved.
@@ -1488,37 +1445,37 @@ void Mela::computeProdP(TLorentzVector Jet1, int Jet1_Id,
       double sumProb = pArray[iG]+pArray[iG+1];
       sumProb *= 0.5;
       dEta = dEta/dEtaGrid;
-//      if (dEtaGrid<0) cout << "dEtaGrid: " << etaArray[nGrid-1] << " - " << etaArray[0] << " = " << dEtaGrid << endl;
-//      if (dEta<0) cout << "dEta: " << etaArray[iG+1] << " - " << etaArray[iG] << " / " << dEtaGrid << " = " << dEta << endl;
-//      if (sumProb<0) cout << "sumProb: " << pArray[iG] << " + " << pArray[iG+1] << " = " << sumProb << endl;
+      //if (dEtaGrid<0) cout << "dEtaGrid: " << etaArray[nGrid-1] << " - " << etaArray[0] << " = " << dEtaGrid << endl;
+      //if (dEta<0) cout << "dEta: " << etaArray[iG+1] << " - " << etaArray[iG] << " / " << dEtaGrid << " = " << dEta << endl;
+      //if (sumProb<0) cout << "sumProb: " << pArray[iG] << " + " << pArray[iG+1] << " = " << sumProb << endl;
       double addProb = sumProb*dEta;
       auxiliaryProb += (float)addProb;
     }
 
-/*
-    if (n_MEcomp>=1000){
-    cout << "N>=1000!:\n";
-    for (int iG=0; iG<nGrid; iG++){
-    cout << etaArray[iG] << '\t';
-    }
-    cout << endl;
-    for (int iG=0; iG<nGrid; iG++){
-    cout << pArray[iG] << '\t';
-    }
-    cout << '\n' << endl;
-    }
-    if (auxiliaryProb<=0){
-    cout << "aux: " << auxiliaryProb << endl;
-    for (int iG=0; iG<nGrid; iG++){
-    cout << etaArray[iG] << '\t';
-    }
-    cout << endl;
-    for (int iG=0; iG<nGrid; iG++){
-    cout << pArray[iG] << '\t';
-    }
-    cout << '\n' << endl;
-    }
-*/
+    /*
+        if (n_MEcomp>=1000){
+        cout << "N>=1000!:\n";
+        for (int iG=0; iG<nGrid; iG++){
+        cout << etaArray[iG] << '\t';
+        }
+        cout << endl;
+        for (int iG=0; iG<nGrid; iG++){
+        cout << pArray[iG] << '\t';
+        }
+        cout << '\n' << endl;
+        }
+        if (auxiliaryProb<=0){
+        cout << "aux: " << auxiliaryProb << endl;
+        for (int iG=0; iG<nGrid; iG++){
+        cout << etaArray[iG] << '\t';
+        }
+        cout << endl;
+        for (int iG=0; iG<nGrid; iG++){
+        cout << pArray[iG] << '\t';
+        }
+        cout << '\n' << endl;
+        }
+        */
   }
 
 
@@ -1693,244 +1650,239 @@ void Mela::computeProdP(
 
 
 void Mela::computePM4l(TLorentzVector Z1_lept1, int Z1_lept1Id,  // input 4-vectors
-		       TLorentzVector Z1_lept2, int Z1_lept2Id,  // 
-		       TLorentzVector Z2_lept1, int Z2_lept1Id,
-		       TLorentzVector Z2_lept2, int Z2_lept2Id,
-		       TVar::SuperMelaSyst syst, 
-		       float& prob){
+  TLorentzVector Z1_lept2, int Z1_lept2Id,  // 
+  TLorentzVector Z2_lept1, int Z2_lept1Id,
+  TLorentzVector Z2_lept2, int Z2_lept2Id,
+  TVar::SuperMelaSyst syst,
+  float& prob){
   reset_PAux();
 
   // Notice: No need to correct lepton masses here since m4l is the only information entered. m4l is not supposed to change after mass corrections.
   TLorentzVector ZZ = (Z1_lept1 + Z1_lept2 + Z2_lept1 + Z2_lept2);
   float mzz = ZZ.M();
   TVar::LeptonFlavor flavor = TVar::Flavor_Dummy;
-
-  if( abs(Z1_lept1Id)==11 &&  abs(Z1_lept2Id)==11 &&
-      abs(Z2_lept1Id)==11 &&  abs(Z2_lept2Id)==11 )
-    flavor = TVar::Flavor_4e;
-  
-  if( abs(Z1_lept1Id)==13 &&  abs(Z1_lept2Id)==13 &&
-      abs(Z2_lept1Id)==13 &&  abs(Z2_lept2Id)==13 )
-    flavor = TVar::Flavor_4mu;
-
-  if( abs(Z1_lept1Id)==11 &&  abs(Z1_lept2Id)==11 &&
-      abs(Z2_lept1Id)==13 &&  abs(Z2_lept2Id)==13 )
-    flavor = TVar::Flavor_2e2mu;
-
-  if( abs(Z1_lept1Id)==13 &&  abs(Z1_lept2Id)==13 &&
-      abs(Z2_lept1Id)==11 &&  abs(Z2_lept2Id)==11 )
-    flavor = TVar::Flavor_2e2mu;
-  
-  
-  computePM4l(mzz,flavor,syst,prob);
+  if (abs(Z1_lept1Id)==11 &&  abs(Z1_lept2Id)==11 &&
+    abs(Z2_lept1Id)==11 &&  abs(Z2_lept2Id)==11) flavor = TVar::Flavor_4e;
+  if (abs(Z1_lept1Id)==13 &&  abs(Z1_lept2Id)==13 &&
+    abs(Z2_lept1Id)==13 &&  abs(Z2_lept2Id)==13) flavor = TVar::Flavor_4mu;
+  if (abs(Z1_lept1Id)==11 &&  abs(Z1_lept2Id)==11 &&
+    abs(Z2_lept1Id)==13 &&  abs(Z2_lept2Id)==13) flavor = TVar::Flavor_2e2mu;
+  if (abs(Z1_lept1Id)==13 &&  abs(Z1_lept2Id)==13 &&
+    abs(Z2_lept1Id)==11 &&  abs(Z2_lept2Id)==11) flavor = TVar::Flavor_2e2mu;
+  computePM4l(mzz, flavor, syst, prob);
 }
 
 void Mela::computePM4l(float mZZ, TVar::LeptonFlavor flavor, TVar::SuperMelaSyst syst, float& prob){
   reset_PAux();
   prob=-99;//default dummy.
-  
-  if(flavor == TVar::Flavor_Dummy) // only compute things if flavor determination succeded
+
+  if (flavor == TVar::Flavor_Dummy) // only compute things if flavor determination succeded
     return;
-  
-  switch(flavor){
-	  case 1: super->SetDecayChannel("4e")   ;break;
-	  case 2: super->SetDecayChannel("4mu")  ;break;
-	  case 3: super->SetDecayChannel("2e2mu");break;
-	  default: std::cout << " unknown flavor: " << flavor << std::endl; exit(0);
+
+  switch (flavor)
+  {
+  case 1:
+    super->SetDecayChannel("4e");
+    break;
+  case 2:
+    super->SetDecayChannel("4mu");
+    break;
+  case 3:
+    super->SetDecayChannel("2e2mu");
+    break;
+  default:
+    std::cout << " unknown flavor: " << flavor << std::endl;
+    exit(0);
   }
 
 
-  if(syst == TVar::SMSyst_None){
-    std::pair<double,double> m4lP = super->M4lProb(mZZ);
-    if(myModel_ == TVar::HSMHiggs) // currently only supported signal is H(0+)
+  if (syst == TVar::SMSyst_None){
+    std::pair<double, double> m4lP = super->M4lProb(mZZ);
+    if (myModel_ == TVar::HSMHiggs) // currently only supported signal is H(0+)
       prob = m4lP.first;
-    if(myModel_ == TVar::bkgZZ) // currently only supported background is summed paramterization
+    if (myModel_ == TVar::bkgZZ) // currently only supported background is summed paramterization
       prob = m4lP.second;
   }
   else{
     //systematics for p(m4l)
-    float mZZtmp=mZZ;
-    float meanErr=float(super->GetSigShapeSystematic("meanCB") );
-    if( syst == TVar::SMSyst_ScaleUp ){
-      mZZtmp = mZZ*(1.0+meanErr);
-      if(mZZtmp>180.0 || mZZtmp<100)mZZtmp=mZZ;      
-      std::pair<double,double> m4lPScaleUp = super->M4lProb(mZZtmp);
-      if(myModel_ == TVar::HSMHiggs)
-	prob = m4lPScaleUp.first; 
-      if(myModel_ == TVar::bkgZZ)
-	prob = m4lPScaleUp.second;
+    float mZZtmp = mZZ;
+    float meanErr=float(super->GetSigShapeSystematic("meanCB"));
+    if (syst == TVar::SMSyst_ScaleUp){
+      mZZtmp = mZZ*(1.+meanErr);
+      if (mZZtmp>180. || mZZtmp<100.) mZZtmp=mZZ;
+      std::pair<double, double> m4lPScaleUp = super->M4lProb(mZZtmp);
+      if (myModel_ == TVar::HSMHiggs) prob = m4lPScaleUp.first;
+      if (myModel_ == TVar::bkgZZ) prob = m4lPScaleUp.second;
     }
 
-    if( syst == TVar::SMSyst_ScaleDown ){    
+    if (syst == TVar::SMSyst_ScaleDown){
       mZZtmp = mZZ*(1.0-meanErr);
-      if(mZZtmp>180 || mZZtmp<100) mZZtmp=mZZ;
-      std::pair<double,double> m4lPScaleDown = super->M4lProb(mZZtmp);
-      if(myModel_ == TVar::HSMHiggs) prob = m4lPScaleDown.first; 
-      if(myModel_ == TVar::bkgZZ) prob = m4lPScaleDown.second;
+      if (mZZtmp>180 || mZZtmp<100) mZZtmp=mZZ;
+      std::pair<double, double> m4lPScaleDown = super->M4lProb(mZZtmp);
+      if (myModel_ == TVar::HSMHiggs) prob = m4lPScaleDown.first;
+      if (myModel_ == TVar::bkgZZ) prob = m4lPScaleDown.second;
     }
-    
-    float sigmaErr=float( super->GetSigShapeSystematic("sigmaCB") );
-    float sigmaCB=float( super->GetSigShapeParameter("sigmaCB") );    
-    if( syst == TVar::SMSyst_ResUp || syst ==  TVar::SMSyst_ResDown ){
-      mZZtmp= myR->Gaus(mZZ,sigmaErr*sigmaCB);
-      if(mZZtmp>180 || mZZtmp<100) mZZtmp=mZZ;
-      std::pair<double,double> m4lPResUp = super->M4lProb(mZZtmp);
-      if(myModel_ == TVar::HSMHiggs) prob = m4lPResUp.first; 
-      if(myModel_ == TVar::bkgZZ) prob = m4lPResUp.second;      
+
+    float sigmaErr=float(super->GetSigShapeSystematic("sigmaCB"));
+    float sigmaCB=float(super->GetSigShapeParameter("sigmaCB"));
+    if (syst == TVar::SMSyst_ResUp || syst ==  TVar::SMSyst_ResDown){
+      mZZtmp= myR->Gaus(mZZ, sigmaErr*sigmaCB);
+      if (mZZtmp>180 || mZZtmp<100) mZZtmp=mZZ;
+      std::pair<double, double> m4lPResUp = super->M4lProb(mZZtmp);
+      if (myModel_ == TVar::HSMHiggs) prob = m4lPResUp.first;
+      if (myModel_ == TVar::bkgZZ) prob = m4lPResUp.second;
     }
   }
 }
 
-void Mela::computeWeight(float mZZ, float mZ1, float mZ2, 
-			 float costhetastar,
-			 float costheta1, 
-			 float costheta2,
-			 float phi,
-			 float phi1,
-			 // return variables:
-			 float& w
-			 ){ // Lepton interference using JHUGen
+void Mela::computeWeight(float mZZ, float mZ1, float mZ2,
+  float costhetastar,
+  float costheta1,
+  float costheta2,
+  float phi,
+  float phi1,
+  // return variables:
+  float& w
+  ){ // Lepton interference using JHUGen
   reset_PAux();
 
-  float dXsec_HZZ_JHU,dXsec_HZZ_JHU_interf; // temporary prob
-  
+  float dXsec_HZZ_JHU, dXsec_HZZ_JHU_interf; // temporary prob
+
   // calculate dXsec for 4e/4mu
-  setProcess(TVar::HSMHiggs,TVar::JHUGen,TVar::ZZGG);
-  computeP(mZZ,mZ1,mZ2,
-	   costhetastar,
-	   costheta1,
-	   costheta2,
-	   phi,phi1,
-	   1,dXsec_HZZ_JHU_interf);
+  setProcess(TVar::HSMHiggs, TVar::JHUGen, TVar::ZZGG);
+  computeP(mZZ, mZ1, mZ2,
+    costhetastar,
+    costheta1,
+    costheta2,
+    phi, phi1,
+    1, dXsec_HZZ_JHU_interf);
 
   // calculate dXsec for 2e2mu
-  setProcess(TVar::HSMHiggs,TVar::JHUGen,TVar::ZZGG);
-  computeP(mZZ,mZ1,mZ2,
-	   costhetastar,
-	   costheta1,
-	   costheta2,
-	   phi,phi1,
-	   3,dXsec_HZZ_JHU);
-  
+  setProcess(TVar::HSMHiggs, TVar::JHUGen, TVar::ZZGG);
+  computeP(mZZ, mZ1, mZ2,
+    costhetastar,
+    costheta1,
+    costheta2,
+    phi, phi1,
+    3, dXsec_HZZ_JHU);
+
   w = dXsec_HZZ_JHU_interf / dXsec_HZZ_JHU;
 
   // protect against anomalously large weights
   if (w>5.) w=25./w;
-
 }
 
-void Mela::computeWeight(float mZZ, float mZ1, float mZ2, 
-			 float costhetastar,
-			 float costheta1, 
-			 float costheta2,
-			 float phi,
-			 float phi1,
-			 double couplingvals[SIZE_HVV_FREENORM],
-			 // return variables:
-			 float& w
-			 ){
+void Mela::computeWeight(float mZZ, float mZ1, float mZ2,
+  float costhetastar,
+  float costheta1,
+  float costheta2,
+  float phi,
+  float phi1,
+  double couplingvals[SIZE_HVV_FREENORM],
+  // return variables:
+  float& w
+  ){
   reset_PAux();
 
-  float dXsec_HZZ_JHU,dXsec_HZZ_JHU_interf; // temporary prob
-  
+  float dXsec_HZZ_JHU, dXsec_HZZ_JHU_interf; // temporary prob
+
   // calculate dXsec for 4e/4mu
-  setProcess(TVar::HSMHiggs,TVar::JHUGen,TVar::ZZGG);
-  computeP(mZZ,mZ1,mZ2,
-	   costhetastar,
-	   costheta1,
-	   costheta2,
-	   phi,phi1,
-	   1,couplingvals,dXsec_HZZ_JHU_interf);
+  setProcess(TVar::HSMHiggs, TVar::JHUGen, TVar::ZZGG);
+  computeP(mZZ, mZ1, mZ2,
+    costhetastar,
+    costheta1,
+    costheta2,
+    phi, phi1,
+    1, couplingvals, dXsec_HZZ_JHU_interf);
 
   // calculate dXsec for 2e2mu
-  setProcess(TVar::HSMHiggs,TVar::JHUGen,TVar::ZZGG);
-  computeP(mZZ,mZ1,mZ2,
-	   costhetastar,
-	   costheta1,
-	   costheta2,
-	   phi,phi1,
-	   3,couplingvals,dXsec_HZZ_JHU);
-  
+  setProcess(TVar::HSMHiggs, TVar::JHUGen, TVar::ZZGG);
+  computeP(mZZ, mZ1, mZ2,
+    costhetastar,
+    costheta1,
+    costheta2,
+    phi, phi1,
+    3, couplingvals, dXsec_HZZ_JHU);
+
   w = dXsec_HZZ_JHU_interf / dXsec_HZZ_JHU;
 
   // protect against anomalously large weights
   if (w>5.) w=25./w;
-
 }
+
 void Mela::setCTotalBkgGraphs(TFile* fcontainer, TGraph* tgC[]){ // Hope it has only 3 members in the array
-	string tgname = "C_TotalBkgM4l_";
+  string tgname = "C_TotalBkgM4l_";
 
-	float rValues[6]={1,5,10,15,20,25}; // Possible r Values
+  float rValues[6]={ 1, 5, 10, 15, 20, 25 }; // Possible r Values
 
-	for(int flavor=0;flavor<3;flavor++){
-		float myWidth = 1;
+  for (int flavor=0; flavor<3; flavor++){
+    float myWidth = 1;
 
-		char crValue[20];
+    char crValue[20];
 
-		int rCode = 2; // r=10
-		myWidth = rValues[rCode];
-		sprintf(crValue,"D_Gamma_gg_r%.0f",myWidth);
+    int rCode = 2; // r=10
+    myWidth = rValues[rCode];
+    sprintf(crValue, "D_Gamma_gg_r%.0f", myWidth);
 
-		string ctgM4L = tgname;
-		string strChannel;
-		if(flavor==0) strChannel = "4e"; // Check this
-		else if(flavor==1) strChannel = "4mu"; // and this
-		else strChannel = "2mu2e";
-		ctgM4L = ctgM4L + strChannel + "_";
-		ctgM4L = ctgM4L + crValue;
-		tgC[flavor] = (TGraph*) fcontainer->Get(ctgM4L.c_str());
-	}
+    string ctgM4L = tgname;
+    string strChannel;
+    if (flavor==0) strChannel = "4e"; // Check this
+    else if (flavor==1) strChannel = "4mu"; // and this
+    else strChannel = "2mu2e";
+    ctgM4L = ctgM4L + strChannel + "_";
+    ctgM4L = ctgM4L + crValue;
+    tgC[flavor] = (TGraph*)fcontainer->Get(ctgM4L.c_str());
+  }
 }
+
 void Mela::constructDggr(float mzz, int flavor, float bkg_VAMCFM_noscale, float ggzz_VAMCFM_noscale, float ggHZZ_prob_pure_noscale, float ggHZZ_prob_int_noscale, float& myDggr){
-	float ctotal_bkg = tgtotalbkg[flavor-1]->Eval(mzz);
+  float ctotal_bkg = tgtotalbkg[flavor-1]->Eval(mzz);
 
-	float rValues[6]={1,5,10,15,20,25};
-	float total_sig_ME;
-	float total_bkg_ME;
-	float myWidth = 1;
-	int rCode = 2;
-	myWidth = rValues[rCode];
+  float rValues[6]={ 1, 5, 10, 15, 20, 25 };
+  float total_sig_ME;
+  float total_bkg_ME;
+  float myWidth = 1;
+  int rCode = 2;
+  myWidth = rValues[rCode];
 
-	total_sig_ME = (myWidth * ggHZZ_prob_pure_noscale + sqrt(myWidth) * ggHZZ_prob_int_noscale + ggzz_VAMCFM_noscale);
-	total_bkg_ME = bkg_VAMCFM_noscale*ctotal_bkg;
-	float kd_denominator = (total_sig_ME+total_bkg_ME);
-	float kd = total_sig_ME/kd_denominator;
-	myDggr = kd;
+  total_sig_ME = (myWidth * ggHZZ_prob_pure_noscale + sqrt(myWidth) * ggHZZ_prob_int_noscale + ggzz_VAMCFM_noscale);
+  total_bkg_ME = bkg_VAMCFM_noscale*ctotal_bkg;
+  float kd_denominator = (total_sig_ME+total_bkg_ME);
+  float kd = total_sig_ME/kd_denominator;
+  myDggr = kd;
 }
+
 void Mela::computeD_gg(float mZZ, float mZ1, float mZ2, // input kinematics
-           float costhetastar,
-           float costheta1,
-           float costheta2,
-           float phi,
-           float phi1,
-           int flavor,
-           TVar::MatrixElement myME,
-           TVar::Process myType,
-           float& prob){
+  float costhetastar,
+  float costheta1,
+  float costheta2,
+  float phi,
+  float phi1,
+  int flavor,
+  TVar::MatrixElement myME,
+  TVar::Process myType,
+  float& prob){
   reset_PAux();
 
-	if(myME != TVar::MCFM || myType != TVar::D_gg10){
-		cout << "Only support MCFM and D_gg10"<<endl;
-		return;
-	}
+  if (myME != TVar::MCFM || myType != TVar::D_gg10){
+    cout << "Only support MCFM and D_gg10" << endl;
+    return;
+  }
 
   setMelaLeptonInterference(TVar::DefaultLeptonInterf); // Override lepton interference setting
 
-	float bkg_VAMCFM_noscale, ggzz_VAMCFM_noscale, ggHZZ_prob_pure_noscale, ggHZZ_prob_int_noscale, bkgHZZ_prob_noscale;
-	setProcess(TVar::bkgZZ, myME, TVar::ZZGG);
-	computeP(mZZ, mZ1, mZ2,
-			costhetastar,costheta1,costheta2,phi,phi1,flavor, ggzz_VAMCFM_noscale);
-	setProcess(TVar::HSMHiggs, myME, TVar::ZZGG);
-	computeP(mZZ, mZ1, mZ2,
-			costhetastar,costheta1,costheta2,phi,phi1,flavor, ggHZZ_prob_pure_noscale);
-	setProcess(TVar::bkgZZ_SMHiggs, myME, TVar::ZZGG);
-	computeP(mZZ, mZ1, mZ2,
-			costhetastar,costheta1,costheta2,phi,phi1,flavor, bkgHZZ_prob_noscale);
-	setProcess(TVar::bkgZZ, myME, TVar::ZZQQB);
-	computeP(mZZ, mZ1, mZ2,
-			costhetastar,costheta1,costheta2,phi,phi1,flavor, bkg_VAMCFM_noscale,0);
-	ggHZZ_prob_int_noscale = bkgHZZ_prob_noscale - ggHZZ_prob_pure_noscale -  ggzz_VAMCFM_noscale;
-	float myDggr;
-	constructDggr(mZZ, flavor, bkg_VAMCFM_noscale, ggzz_VAMCFM_noscale, ggHZZ_prob_pure_noscale, ggHZZ_prob_int_noscale, myDggr);
-	prob=myDggr;
+  float bkg_VAMCFM_noscale, ggzz_VAMCFM_noscale, ggHZZ_prob_pure_noscale, ggHZZ_prob_int_noscale, bkgHZZ_prob_noscale;
+  setProcess(TVar::bkgZZ, myME, TVar::ZZGG);
+  computeP(mZZ, mZ1, mZ2, costhetastar, costheta1, costheta2, phi, phi1, flavor, ggzz_VAMCFM_noscale);
+  setProcess(TVar::HSMHiggs, myME, TVar::ZZGG);
+  computeP(mZZ, mZ1, mZ2, costhetastar, costheta1, costheta2, phi, phi1, flavor, ggHZZ_prob_pure_noscale);
+  setProcess(TVar::bkgZZ_SMHiggs, myME, TVar::ZZGG);
+  computeP(mZZ, mZ1, mZ2, costhetastar, costheta1, costheta2, phi, phi1, flavor, bkgHZZ_prob_noscale);
+  setProcess(TVar::bkgZZ, myME, TVar::ZZQQB);
+  computeP(mZZ, mZ1, mZ2, costhetastar, costheta1, costheta2, phi, phi1, flavor, bkg_VAMCFM_noscale, 0);
+  ggHZZ_prob_int_noscale = bkgHZZ_prob_noscale - ggHZZ_prob_pure_noscale - ggzz_VAMCFM_noscale;
+
+  float myDggr;
+  constructDggr(mZZ, flavor, bkg_VAMCFM_noscale, ggzz_VAMCFM_noscale, ggHZZ_prob_pure_noscale, ggHZZ_prob_int_noscale, myDggr);
+  prob=myDggr;
 }

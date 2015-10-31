@@ -234,9 +234,11 @@ static const TString branch_format_particle =
   "Eta/D:"
   "Phi/D";
 
-// in development
-struct MelaOutputRecord{
-  MelaOutputRecord(){
+class MelaOutputRecord{
+public:
+
+  void reset(){
+    sumME=0;
     for (int ix=0; ix<nmsq; ix++){
       for (int pp=0; pp<2; pp++) partonWeight[pp][ix]=0;
       for (int iy=0; iy<nmsq; iy++){
@@ -245,38 +247,88 @@ struct MelaOutputRecord{
       }
     }
   }
-  MelaOutputRecord(
+  void setPartonWeights(
     double partonOneWeight_[nmsq],
-    double partonTwoWeight_[nmsq],
-    double MEsq_[nmsq][nmsq],
-    double weightedMEsq_[nmsq][nmsq]
+    double partonTwoWeight_[nmsq]
     ){
     for (int ix=0; ix<nmsq; ix++){
       partonWeight[0][ix]=partonOneWeight_[ix];
       partonWeight[1][ix]=partonTwoWeight_[ix];
+    }
+  }
+  void setMEArray(double MEsq_[nmsq][nmsq]){
+    for (int ix=0; ix<nmsq; ix++){
+      for (int iy=0; iy<nmsq; iy++) MEsq[ix][iy]=MEsq_[ix][iy];
+    }
+  }
+  void setTransverseMEArray(double MEsq_[nmsq][nmsq]){
+    for (int ix=0; ix<nmsq; ix++){
+      for (int iy=0; iy<nmsq; iy++) MEsq[iy][ix]=MEsq_[ix][iy];
+    }
+  }
+
+  void addMEArray(double MEsq_[nmsq][nmsq], double factor=1.){
+    for (int ix=0; ix<nmsq; ix++){
+      for (int iy=0; iy<nmsq; iy++) MEsq[ix][iy]+=MEsq_[ix][iy]*factor;
+    }
+    if (sumME!=0) computeWeightedMEArray();
+  }
+  void addTransverseMEArray(double MEsq_[nmsq][nmsq], double factor=1.){
+    for (int ix=0; ix<nmsq; ix++){
+      for (int iy=0; iy<nmsq; iy++) MEsq[iy][ix]+=MEsq_[ix][iy]*factor;
+    }
+    if (sumME!=0) computeWeightedMEArray();
+  }
+  void addMERecord(MelaOutputRecord* rcd, double factor=1., bool overwrite=false){
+    double MEsq_[nmsq][nmsq]={ { 0 } };
+    double partonOneWeight_[nmsq]={ 0 };
+    double partonTwoWeight_[nmsq]={ 0 };
+    rcd->getUnweightedMEArray(MEsq_);
+    rcd->getPartonWeights(partonOneWeight_, partonTwoWeight_);
+
+    if (overwrite) reset();
+    setPartonWeights(partonOneWeight_, partonTwoWeight_);
+    addMEArray(MEsq_);
+  }
+
+  void computeWeightedMEArray(){
+    sumME=0;
+    for (int ix=0; ix<nmsq; ix++){
       for (int iy=0; iy<nmsq; iy++){
-        MEsq[ix][iy]=MEsq_[ix][iy];
-        weightedMEsq[ix][iy]=weightedMEsq_[ix][iy];
+        weightedMEsq[ix][iy]=partonWeight[0][ix]*MEsq[ix][iy]*partonWeight[1][iy];
+        sumME += weightedMEsq[ix][iy];
       }
     }
   }
-  MelaOutputRecord(
-    double partonOneWeight_[nmsq],
-    double partonTwoWeight_[nmsq],
-    double MEsq_[nmsq][nmsq]
-    ){
+
+  MelaOutputRecord(){ reset(); }
+
+  double getSumME(){ return sumME; }
+  void getWeightedMEArray(double MEsq_[nmsq][nmsq]){
     for (int ix=0; ix<nmsq; ix++){
-      partonWeight[0][ix]=partonOneWeight_[ix];
-      partonWeight[1][ix]=partonTwoWeight_[ix];
-      for (int iy=0; iy<nmsq; iy++) MEsq[ix][iy]=MEsq_[ix][iy];
-    }
-    for (int ix=0; ix<nmsq; ix++){
-      for (int iy=0; iy<nmsq; iy++) weightedMEsq[ix][iy]=partonWeight[0][ix]*MEsq[ix][iy]*partonWeight[1][iy];
+      for (int iy=0; iy<nmsq; iy++) MEsq_[ix][iy] = weightedMEsq[ix][iy];
     }
   }
+  void getUnweightedMEArray(double MEsq_[nmsq][nmsq]){
+    for (int ix=0; ix<nmsq; ix++){
+      for (int iy=0; iy<nmsq; iy++) MEsq_[ix][iy] = MEsq[ix][iy];
+    }
+  }
+  void getPartonWeights(
+    double partonOneWeight_[nmsq],
+    double partonTwoWeight_[nmsq]
+    ){
+    for (int ix=0; ix<nmsq; ix++){
+      partonOneWeight_[ix] = partonWeight[0][ix];
+      partonTwoWeight_[ix] = partonWeight[1][ix];
+    }
+  }
+
+private:
   double partonWeight[2][nmsq];
   double MEsq[nmsq][nmsq];
   double weightedMEsq[nmsq][nmsq];
+  double sumME;
 };
 struct hzz4l_event_type{
   int PdgCode[4];

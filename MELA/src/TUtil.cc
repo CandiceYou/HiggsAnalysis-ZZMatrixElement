@@ -747,13 +747,12 @@ double SumMatrixElementPDF(
   int NPart=npart_.npart+2;
   double p4[4][mxpart] = { { 0 } };
   double s[mxpart][mxpart] = { { 0 } };
-  double fx1[nmsq]={ 0 };
-  double fx2[nmsq]={ 0 };
+  //double fx1[nmsq]={ 0 };
+  //double fx2[nmsq]={ 0 };
 
   int channeltoggle=0;
   double msq[nmsq][nmsq]={ { 0 } };
   double msqjk=0;
-  double msqgg=0;
 
   //Convert TLorentzVector into 4xNPart Matrix
   //reverse sign of incident partons
@@ -836,55 +835,18 @@ double SumMatrixElementPDF(
     if (process==TVar::bkgZZ_SMHiggs && matrixElement==TVar::JHUGen) gg_zz_int_freenorm_(p4[0], coupling, msq[0]); // |ggZZ + ggHZZ|**2 MCFM 6.6 version
     if (process==TVar::bkgZZ_SMHiggs && matrixElement==TVar::MCFM) gg_zz_all_(p4[0], msq[0]); // |ggZZ + ggHZZ|**2
     if (process==TVar::HSMHiggs && production == TVar::ZZGG) gg_hzz_tb_(p4[0], msq[0]); // |ggHZZ|**2
-    if (process==TVar::bkgZZ && production==TVar::ZZGG){
-      gg_zz_(p4[0], &msqgg); // |ggZZ|**2
-      msq[5][5] = msqgg;
-
-      fdist_(&density_.ih1, &xx[0], &facscale_.facscale, fx1);
-      fdist_(&density_.ih2, &xx[1], &facscale_.facscale, fx2);
-      for (int i=0; i<nmsq; i++){
-        (RcdME->partonWeight)[0][i] = fx1[i];
-        (RcdME->partonWeight)[1][i] = fx2[i];
-      }
-      (RcdME->MEsq)[5][5] = msq[5][5];
-      (RcdME->weightedMEsq)[5][5] = fx2[5]*msq[5][5]*fx1[5];
-    }
+    if (process==TVar::bkgZZ && production==TVar::ZZGG) gg_zz_(p4[0], &msq[5][5]); // |ggZZ|**2
     if ((process==TVar::bkgZZ_SMHiggs || process==TVar::HSMHiggs || process==TVar::bkgZZ) && production==TVar::JJVBF) qq_zzqq_(p4[0], msq[0]); // VBF MCFM SBI, S or B
-/*
-    // Below code sums over all production parton flavors according to PDF
-    // This is disabled as we are not using the intial production information
-    // the below code is fine for the particle produced by single flavor of incoming partons
 
-    for(int ii=0;ii<nmsq;ii++){
-      for(int jj=0;jj<nmsq;jj++){
-
-        //2-D matrix is transposed in fortran
-        //msq[ parton2 ] [ parton1 ]
-        //flavor_msq[jj][ii] = fx1[ii]*fx2[jj]*msq[jj][ii];
-
-        flavor_msq[jj][ii] = msq[jj][ii];
-        //cout<<jj<<ii<<"="<<msq[jj][ii]<<"  ";
-        msqjk+=flavor_msq[jj][ii];
-      }//ii
-    //cout<<"\n";
-    }//jj
-      */
     // by default assume only gg productions 
     // FOTRAN convention -5    -4   -3  -2    -1  0 1 2 3 4 5 
     //     parton flavor bbar cbar sbar ubar dbar g d u s c b
     // C++ convention     0     1   2    3    4   5 6 7 8 9 10
-    //
-    msqjk = msq[5][5];
-    if (process==TVar::bkgZZ && (production == TVar::ZZQQB || production == TVar::ZZQQB_STU || production == TVar::ZZQQB_S || production == TVar::ZZQQB_TU || production ==TVar::ZZINDEPENDENT)) msqjk=msq[3][7]+msq[7][3];
-/*
-      if (process == TVar::bkgZZ && (production == TVar::ZZQQB_STU || production == TVar::ZZQQB_S || production == TVar::ZZQQB_TU)){
-        for (int ix = 0; ix < 10; ix++){
-          for (int iy = 0; iy < 10; iy++) cout << msq[ix][iy] << '\t';
-          cout << endl;
-        }
-      }
-*/
-    if ((process==TVar::bkgZZ_SMHiggs || process==TVar::HSMHiggs || process==TVar::bkgZZ) && production==TVar::JJVBF) msqjk=SumMEPDF(mcfm_event->p[0], mcfm_event->p[1], msq, RcdME, TVar::ERROR, EBEAM);
+
+    double msqjk_sum = SumMEPDF(mcfm_event->p[0], mcfm_event->p[1], msq, RcdME, TVar::ERROR, EBEAM);
+    if (process==TVar::bkgZZ && (production == TVar::ZZQQB || production == TVar::ZZQQB_STU || production == TVar::ZZQQB_S || production == TVar::ZZQQB_TU || production ==TVar::ZZINDEPENDENT)) msqjk = msq[3][7] + msq[7][3]; // all of the unweighted MEs are the same
+    else if ((process==TVar::bkgZZ_SMHiggs || process==TVar::HSMHiggs || process==TVar::bkgZZ) && production==TVar::JJVBF) msqjk=msqjk_sum; // MCFM VVH sum
+    else msqjk = msq[5][5]; // gg-only
 
     (*flux)=fbGeV2/(8.*xx[0]*xx[1]*EBEAM*EBEAM);
   }
@@ -1497,25 +1459,15 @@ void ComputePDF(const TLorentzVector p0, const TLorentzVector p1, double fx1[nms
 
 // Below code sums over all production parton flavors according to PDF 
 double SumMEPDF(const TLorentzVector p0, const TLorentzVector p1, double msq[nmsq][nmsq], MelaOutputRecord* RcdME, TVar::VerbosityLevel verbosity, double EBEAM){
-  double msqjk(0.);
   double fx1[nmsq]={ 0 };
   double fx2[nmsq]={ 0 };
+  double wgt_msq[nmsq][nmsq]={ { 0 } };
+  
   ComputePDF(p0, p1, fx1, fx2, verbosity, EBEAM);
-  for (int i=0; i<nmsq; i++){
-    (RcdME->partonWeight)[0][i] = fx1[i];
-    (RcdME->partonWeight)[1][i] = fx2[i];
-    if (verbosity >= TVar::DEBUG) std::cout << "fx1[" << i << "]: " <<  (RcdME->partonWeight)[0][i] << "\tfx2[" << i << "]: " <<  (RcdME->partonWeight)[1][i] << std::endl;
-  }
-  for(int ii=0;ii<nmsq;ii++){
-    for(int jj=0;jj<nmsq;jj++){
-      //2-D matrix is reversed in fortran
-      // msq[ parton2 ] [ parton1 ]
-      double flavor_msq = fx1[ii]*fx2[jj]*msq[jj][ii];
-      msqjk += flavor_msq;
-      (RcdME->MEsq)[ii][jj] = msq[jj][ii]; // MEsq is not inverted as in Fortran
-      (RcdME->weightedMEsq)[ii][jj] = flavor_msq;
-    }//ii
-  }//jj
-  return msqjk;
+  RcdME->setPartonWeights(fx1, fx2);
+  RcdME->setTransverseMEArray(msq);
+  RcdME->computeWeightedMEArray();
+  RcdME->getWeightedMEArray(wgt_msq);
+  return RcdME->getSumME();
 }
 

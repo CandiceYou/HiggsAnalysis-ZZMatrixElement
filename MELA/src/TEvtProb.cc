@@ -788,6 +788,7 @@ double TEvtProb::XsecCalc_VX(TVar::Process proc, TVar::Production production, vh
   double selfDHvvcoupl[SIZE_HVV_VBF][2]
   ){
   ResetMERecord();
+  MelaOutputRecord RcdME_temp;
 
   //Initialize Process
   SetProcess(proc);
@@ -884,14 +885,16 @@ double TEvtProb::XsecCalc_VX(TVar::Process proc, TVar::Production production, vh
       Hvvcoupl[5][0] = -12046.01;
     }
 
-    if (!inclusiveHadronicJets) msqjk = VHiggsMatEl(_process, _production, &event_scales, &RcdME, pVH, pHdaughter, Vdecay_id, _hmass, _hwidth, Hvvcoupl, verbosity, EBEAM);
+    if (!inclusiveHadronicJets) msqjk = VHiggsMatEl(_process, _production, &event_scales, &RcdME, pVH, pHdaughter, Vdecay_id, _hmass, _hwidth, Hvvcoupl, verbosity, EBEAM); // The use of RcdME directly is NOT a bug!
     else{
       for (int outgoing1 = -nf; outgoing1 <= nf; outgoing1++){
         if (_production == TVar::ZH){
           if (outgoing1 <= 0) continue;
           Vdecay_id[0] = outgoing1;
           Vdecay_id[1] = -outgoing1;
-          msqjk += (VHiggsMatEl(_process, _production, &event_scales, &RcdME, pVH, pHdaughter, Vdecay_id, _hmass, _hwidth, Hvvcoupl, verbosity, EBEAM)) / N_Q; // Average over quark flavors
+          msqjk += (VHiggsMatEl(_process, _production, &event_scales, &RcdME_temp, pVH, pHdaughter, Vdecay_id, _hmass, _hwidth, Hvvcoupl, verbosity, EBEAM)) / N_Q; // Average over quark flavors
+          RcdME.addMERecord(&RcdME_temp, 1./N_Q);
+          RcdME_temp.reset();
         }
         else if (_production == TVar::WH){
           if (outgoing1 == 0) continue;
@@ -900,7 +903,9 @@ double TEvtProb::XsecCalc_VX(TVar::Process proc, TVar::Production production, vh
               if (abs(outgoing2) == abs(outgoing1)) continue;
               Vdecay_id[0] = outgoing1;
               Vdecay_id[1] = outgoing2;
-              msqjk += (VHiggsMatEl(_process, _production, &event_scales, &RcdME, pVH, pHdaughter, Vdecay_id, _hmass, _hwidth, Hvvcoupl, verbosity, EBEAM)) / 12.; // Average over quark flavors; CAUTION about 12: Depends on nf, (nf+1)*(nf-1)/2 or nf**2/2
+              msqjk += (VHiggsMatEl(_process, _production, &event_scales, &RcdME_temp, pVH, pHdaughter, Vdecay_id, _hmass, _hwidth, Hvvcoupl, verbosity, EBEAM)) / 12.; // Average over quark flavors; CAUTION about 12: Depends on nf, (nf+1)*(nf-1)/2 or nf**2/2
+              RcdME.addMERecord(&RcdME_temp, 1./12.);
+              RcdME_temp.reset();
             }
           }
           if (outgoing1 == -2 || outgoing1 == -4){ // u-bar or c-bar to d, b or s
@@ -908,7 +913,9 @@ double TEvtProb::XsecCalc_VX(TVar::Process proc, TVar::Production production, vh
               if (abs(outgoing2) == abs(outgoing1)) continue;
               Vdecay_id[0] = outgoing1;
               Vdecay_id[1] = outgoing2;
-              msqjk += (VHiggsMatEl(_process, _production, &event_scales, &RcdME, pVH, pHdaughter, Vdecay_id, _hmass, _hwidth, Hvvcoupl, verbosity, EBEAM)) / 12.; // Average over quark flavors; CAUTION about 12: Depends on nf
+              msqjk += (VHiggsMatEl(_process, _production, &event_scales, &RcdME_temp, pVH, pHdaughter, Vdecay_id, _hmass, _hwidth, Hvvcoupl, verbosity, EBEAM)) / 12.; // Average over quark flavors; CAUTION about 12: Depends on nf
+              RcdME.addMERecord(&RcdME_temp, 1./12.);
+              RcdME_temp.reset();
             }
           }
         }
@@ -1056,15 +1063,6 @@ void TEvtProb::SetHiggsMass(double mass, float wHiggs){
 */
 }
 
-void TEvtProb::ResetMERecord(){
-  for (int ii=0; ii<nmsq; ii++){
-    (RcdME.partonWeight)[0][ii] = 0;
-    (RcdME.partonWeight)[1][ii] = 0;
-    for (int jj=0; jj<nmsq; jj++){
-      (RcdME.MEsq)[ii][jj] = 0;
-      (RcdME.weightedMEsq)[ii][jj] = 0;
-    }
-  }
-}
+void TEvtProb::ResetMERecord(){ RcdME.reset(); }
 
 
