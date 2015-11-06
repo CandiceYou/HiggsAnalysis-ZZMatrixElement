@@ -931,7 +931,7 @@ double TEvtProb::XsecCalc_VX(TVar::Process proc, TVar::Production production, vh
   return msqjk;
 }
 
-// Cross-section calculations for ttbar -> H
+// Cross section calculations for ttbar -> H
 double TEvtProb::XsecCalc_TTX(
   TVar::Process proc, TVar::Production production,
   tth_event_type &tth_event,
@@ -1023,7 +1023,7 @@ double TEvtProb::XsecCalc_TTX(
       msq *= 0.5;
     }
   }
-  else std::cout << "Non-JHUGen ttH is not supported!" << std::endl;
+  else std::cout << "Non-JHUGen ttH is not supported in TEvtProb::XsecCalc_TTX!" << std::endl;
 
   ResetRenFacScaleMode();
   return msq;
@@ -1038,9 +1038,7 @@ void TEvtProb::SetRenFacScaleMode(TVar::EventScaleScheme renormalizationSch, TVa
 }
 
 
-// this appears to be some kind of 
-// way of setting MCFM parameters through
-// an interface defined in TMCFM.hh
+// Set MCFM parameters through an interface defined in TMCFM.hh
 void TEvtProb::SetHiggsMass(double mass, float wHiggs){
   masses_mcfm_.hmass=mass;
   _hmass = mass;
@@ -1052,15 +1050,6 @@ void TEvtProb::SetHiggsMass(double mass, float wHiggs){
     masses_mcfm_.hwidth = wHiggs;
     _hwidth = wHiggs;
   }
-  //	cout << "Set JHUGen Higgs mass width to: " << _hmass << ", " << _hwidth << endl;
-  //	cout << "Set MCFM Higgs mass width to: " << masses_mcfm_.hmass << ", " << masses_mcfm_.hwidth << endl;
-/*
-    //
-    // get higgs width for 125 and 250 GeV
-    //
-    std::cout << "H125 width " << myCSW_->HiggsWidth(0, 125);
-    std::cout << "H250 width " << myCSW_->HiggsWidth(0, 250);
-*/
 }
 
 void TEvtProb::ResetMERecord(){ RcdME.reset(); }

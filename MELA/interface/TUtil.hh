@@ -17,6 +17,9 @@
 #include <TFile.h>
 #include <TF1.h>
 #include "TVar.hh"
+// Misc.
+#include "TModMisc.hh"
+// Higgs decay ME
 #include "TModHiggsMatEl.hh"
 #include "TModGravitonMatEl.hh"
 #include "TModZprimeMatEl.hh"
@@ -67,5 +70,7 @@ bool CheckPartonMomFraction(const TLorentzVector p0, const TLorentzVector p1, do
 void ComputePDF(const TLorentzVector p0, const TLorentzVector p1, double fx1[nmsq], double fx2[nmsq], TVar::VerbosityLevel verbosity, double EBEAM);
 double SumMEPDF(const TLorentzVector p0, const TLorentzVector p1, double flavor_msq[nmsq][nmsq], MelaOutputRecord* RcdME, TVar::VerbosityLevel verbosity, double EBEAM);
 double InterpretScaleScheme(TVar::Production production, TVar::MatrixElement matrixElement, TVar::EventScaleScheme scheme, TLorentzVector p[mxpart]);
+void SetDecayModes(int first, int second);
+void GetDecayModes(int& first, int& second);
 
 #endif

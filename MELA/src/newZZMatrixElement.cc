@@ -20,60 +20,60 @@ newZZMatrixElement::newZZMatrixElement(const char* pathtoHiggsCSandWidth,
   //std::cout << "TEST" << std::endl;
 }
 
-std::vector<TLorentzVector> newZZMatrixElement::Calculate4Momentum(double Mx,double M1,double M2,double theta,double theta1,double theta2,double Phi1,double Phi){
-    double phi1,phi2;
-    phi1=TMath::Pi()-Phi1;
-    phi2=Phi1+Phi;
+std::vector<TLorentzVector> newZZMatrixElement::Calculate4Momentum(double Mx, double M1, double M2, double theta, double theta1, double theta2, double Phi1, double Phi){
+  double phi1, phi2;
+  phi1=TMath::Pi()-Phi1;
+  phi2=Phi1+Phi;
 
-    double gamma1,gamma2,beta1,beta2;
+  double gamma1, gamma2, beta1, beta2;
 
-    gamma1=(Mx*Mx+M1*M1-M2*M2)/(2*Mx*M1);
-    gamma2=(Mx*Mx-M1*M1+M2*M2)/(2*Mx*M2);
-    beta1=sqrt(1-1/(gamma1*gamma1));
-    beta2=sqrt(1-1/(gamma2*gamma2));
+  gamma1=(Mx*Mx+M1*M1-M2*M2)/(2*Mx*M1);
+  gamma2=(Mx*Mx-M1*M1+M2*M2)/(2*Mx*M2);
+  beta1=sqrt(1.-1./(gamma1*gamma1));
+  beta2=sqrt(1.-1./(gamma2*gamma2));
 
-    //gluon 4 vectors
-    TLorentzVector p1CM(0,0,Mx/2,Mx/2);
-    TLorentzVector p2CM(0,0,-Mx/2,Mx/2);
+  //gluon 4 vectors
+  TLorentzVector p1CM(0, 0, Mx/2., Mx/2.);
+  TLorentzVector p2CM(0, 0, -Mx/2., Mx/2.);
 
-    //vector boson 4 vectors
-    TLorentzVector kZ1(gamma1*M1*sin(theta)*beta1,0, gamma1*M1*cos(theta)*beta1,gamma1*M1*1);
-    TLorentzVector kZ2(-gamma2*M2*sin(theta)*beta2,0, -gamma2*M2*cos(theta)*beta2,gamma2*M2*1);
+  //vector boson 4 vectors
+  TLorentzVector kZ1(gamma1*M1*sin(theta)*beta1, 0., gamma1*M1*cos(theta)*beta1, gamma1*M1);
+  TLorentzVector kZ2(-gamma2*M2*sin(theta)*beta2, 0., -gamma2*M2*cos(theta)*beta2, gamma2*M2);
 
-    //Rotation and Boost matrices. Note gamma1*beta1*M1=gamma2*beta2*M2.
+  //Rotation and Boost matrices. Note gamma1*beta1*M1=gamma2*beta2*M2.
 
-    TLorentzRotation Z1ToZ,Z2ToZ;
+  TLorentzRotation Z1ToZ, Z2ToZ;
 
-    Z1ToZ.Boost(0,0,beta1);
-    Z2ToZ.Boost(0,0,beta2);
-    Z1ToZ.RotateY(theta);
-    Z2ToZ.RotateY(TMath::Pi()+theta);
+  Z1ToZ.Boost(0., 0., beta1);
+  Z2ToZ.Boost(0., 0., beta2);
+  Z1ToZ.RotateY(theta);
+  Z2ToZ.RotateY(TMath::Pi()+theta);
 
 
-    //fermion 4 vectors in vector boson rest frame
+  //fermion 4 vectors in vector boson rest frame
 
-    TLorentzVector p3Z1((M1/2)*sin(theta1)*cos(phi1),(M1/2)*sin(theta1)*sin(phi1),(M1/2)*cos(theta1),(M1/2)*1);
-    TLorentzVector p4Z1(-(M1/2)*sin(theta1)*cos(phi1),-(M1/2)*sin(theta1)*sin(phi1),-(M1/2)*cos(theta1),(M1/2)*1);
-    TLorentzVector p5Z2((M2/2)*sin(theta2)*cos(phi2),(M2/2)*sin(theta2)*sin(phi2),(M2/2)*cos(theta2),(M2/2)*1);
-    TLorentzVector p6Z2(-(M2/2)*sin(theta2)*cos(phi2),-(M2/2)*sin(theta2)*sin(phi2),-(M2/2)*cos(theta2),(M2/2)*1);
+  TLorentzVector p3Z1((M1/2.)*sin(theta1)*cos(phi1), (M1/2.)*sin(theta1)*sin(phi1), (M1/2.)*cos(theta1), (M1/2.));
+  TLorentzVector p4Z1(-(M1/2.)*sin(theta1)*cos(phi1), -(M1/2.)*sin(theta1)*sin(phi1), -(M1/2.)*cos(theta1), (M1/2.));
+  TLorentzVector p5Z2((M2/2.)*sin(theta2)*cos(phi2), (M2/2.)*sin(theta2)*sin(phi2), (M2/2.)*cos(theta2), (M2/2.));
+  TLorentzVector p6Z2(-(M2/2.)*sin(theta2)*cos(phi2), -(M2/2.)*sin(theta2)*sin(phi2), -(M2/2.)*cos(theta2), (M2/2.));
 
-    // fermions 4 vectors in CM frame
+  // fermions 4 vectors in CM frame
 
-    TLorentzVector p3CM,p4CM,p5CM,p6CM;
+  TLorentzVector p3CM, p4CM, p5CM, p6CM;
 
-    p3CM=Z1ToZ*p3Z1;
-    p4CM=Z1ToZ*p4Z1;
-    p5CM=Z2ToZ*p5Z2;
-    p6CM=Z2ToZ*p6Z2;
+  p3CM=Z1ToZ*p3Z1;
+  p4CM=Z1ToZ*p4Z1;
+  p5CM=Z2ToZ*p5Z2;
+  p6CM=Z2ToZ*p6Z2;
 
-    vector<TLorentzVector> p;
+  vector<TLorentzVector> p;
 
-    p.push_back(p3CM);
-    p.push_back(p4CM);
-    p.push_back(p5CM);
-    p.push_back(p6CM);
+  p.push_back(p3CM);
+  p.push_back(p4CM);
+  p.push_back(p5CM);
+  p.push_back(p6CM);
 
-    return p;
+  return p;
 }
 
 void newZZMatrixElement::set_LHAgrid(const char* path){
@@ -91,13 +91,23 @@ void newZZMatrixElement::set_wHiggs(float myPoleWidth){
 void newZZMatrixElement::set_LeptonInterference(TVar::LeptonInterference myLepInterf){
 	myLeptonInterference = myLepInterf;
 }
+void newZZMatrixElement::resetPerEvent(){
+  if (wHiggs>=0){
+    set_wHiggs(-1); // Protection against forgetfulness; custom width has to be set per-event
+    Xcal2.SetHiggsMass(mHiggs, -1);
+  }
+  if (myLeptonInterference != TVar::DefaultLeptonInterf){
+    set_LeptonInterference(TVar::DefaultLeptonInterf); // Return back to default lepton interference settings after each calculation
+    Xcal2.SetLeptonInterf(TVar::DefaultLeptonInterf);
+  }
+}
 void newZZMatrixElement::reset_MCFM_EWKParameters(double ext_Gf, double ext_aemmz, double ext_mW, double ext_mZ, double ext_xW, int ext_ewscheme){
   Xcal2.ResetMCFM_EWKParameters(ext_Gf, ext_aemmz, ext_mW, ext_mZ, ext_xW, ext_ewscheme);
 }
-
 void newZZMatrixElement::set_RenFacScaleMode(TVar::EventScaleScheme renormalizationSch, TVar::EventScaleScheme factorizationSch, double ren_sf, double fac_sf){
   Xcal2.SetRenFacScaleMode(renormalizationSch, factorizationSch, ren_sf, fac_sf);
 }
+MelaOutputRecord newZZMatrixElement::get_FullMERecord(){ return Xcal2.GetFullMERecord(); }
 
 void newZZMatrixElement::computeXS(float mZZ, float mZ1, float mZ2,
   float costhetastar,
@@ -194,18 +204,11 @@ void newZZMatrixElement::computeXS(float mZZ, float mZ1, float mZ2,
   Xcal2.SetProcess(process_);
   Xcal2.SetLeptonInterf(myLeptonInterference);
   mevalue = Xcal2.XsecCalc(process_, production_, hzz4l_event, verb, couplingvals, selfDHvvcoupl, selfDZqqcoupl, selfDZvvcoupl, selfDGqqcoupl, selfDGggcoupl, selfDGvvcoupl);
-  if (wHiggs>=0){
-    set_wHiggs(-1); // Protection against forgetfulness; custom width has to be set per-event
-    Xcal2.SetHiggsMass(mHiggs, -1);
-  }
-  if (myLeptonInterference != TVar::DefaultLeptonInterf){
-    set_LeptonInterference(TVar::DefaultLeptonInterf); // Return back to default lepton interference settings after each calculation
-    Xcal2.SetLeptonInterf(TVar::DefaultLeptonInterf);
-  }
-  return;
+  
+  resetPerEvent();
 }
 
-  void newZZMatrixElement::computeProdXS_VVHVV(
+void newZZMatrixElement::computeProdXS_VVHVV(
   TLorentzVector jet[2],
   TLorentzVector Higgs_daughter[4],
   int jet_pdgid[2],
@@ -238,15 +241,8 @@ void newZZMatrixElement::computeXS(float mZZ, float mZ1, float mZ2,
   Xcal2.SetProcess(process_);
   Xcal2.SetLeptonInterf(myLeptonInterference);
   mevalue = Xcal2.XsecCalc_VVXVV(process_, production_, hzz4l_event, verb, selfDHvvcoupl, selfDHwwcoupl);
-  if (wHiggs>=0){
-    set_wHiggs(-1); // Protection against forgetfulness; custom width has to be set per-event
-    Xcal2.SetHiggsMass(mHiggs, -1);
-  }
-  if (myLeptonInterference != TVar::DefaultLeptonInterf){
-    set_LeptonInterference(TVar::DefaultLeptonInterf); // Return back to default lepton interference settings after each calculation
-    Xcal2.SetLeptonInterf(TVar::DefaultLeptonInterf);
-  }
-  return;
+
+  resetPerEvent();
 }
 
 void newZZMatrixElement::computeProdXS_JJH(TLorentzVector jet1,
@@ -276,8 +272,6 @@ void newZZMatrixElement::computeProdXS_JJH(TLorentzVector jet1,
 	  selfDHvvcoupl,
 	  selfDHwwcoupl
 	  );
-  
-  return;
 }
 
 void newZZMatrixElement::computeProdXS_JH(TLorentzVector singleJet,
@@ -301,8 +295,6 @@ void newZZMatrixElement::computeProdXS_JH(TLorentzVector singleJet,
     p4,
 	  verb
 	  );
-  
-  return;
 }
 
 void newZZMatrixElement::computeProdXS_VH(
@@ -357,12 +349,8 @@ void newZZMatrixElement::computeProdXS_VH(
     verb,
     selfDHvvcoupl
     );
-  if (wHiggs>=0){
-    set_wHiggs(-1); // Protection against forgetfulness; custom width has to be set per-event
-    Xcal2.SetHiggsMass(mHiggs, -1);
-  }
 
-  return;
+  resetPerEvent();
 }
 
 void newZZMatrixElement::computeProdXS_ttH(
@@ -393,6 +381,7 @@ void newZZMatrixElement::computeProdXS_ttH(
     }
     if (noCoupl){
       mevalue=0;
+      return;
     }
   }
 
@@ -415,11 +404,6 @@ void newZZMatrixElement::computeProdXS_ttH(
       );
   }
   
-  if (wHiggs>=0){
-      set_wHiggs(-1); // Protection against forgetfulness; custom width has to be set per-event
-      Xcal2.SetHiggsMass(mHiggs, -1);
-  }
-
-  return;
+  resetPerEvent();
 }
 

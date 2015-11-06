@@ -1,4 +1,4 @@
-include './variables.F90'
+include 'variables.F90'
 
    integer, parameter :: ZZMode=00,ZgsMode=01,gsZMode=02,gsgsMode=03
    integer, parameter :: WWMode=10
@@ -160,15 +160,15 @@ real(8) :: M_V,Ga_V
 real(8), parameter :: tol = 0.0000001d0
 
 
-    if( DecayMode1.le.3 ) then
-       M_V = M_Z
-       Ga_V= Ga_Z
-    elseif( (DecayMode1.ge.4) .and. (DecayMode1.le.6) ) then
-       M_V = M_W
-       Ga_V= Ga_W    
-    elseif( DecayMode1.eq.7 ) then
-       M_V = 0d0
-       Ga_V= 0d0    
-    endif
+if( (DecayMode1.le.3) .or. ( (DecayMode1.ge.8) .and. (DecayMode1.le.9) ) ) then
+  M_V = M_Z
+  Ga_V= Ga_Z
+elseif( ( (DecayMode1.ge.4) .and. (DecayMode1.le.6) ) .or. ( (DecayMode1.ge.10) .and. (DecayMode1.le.11) ) ) then
+  M_V = M_W
+  Ga_V= Ga_W    
+elseif( DecayMode1.eq.7 ) then
+  M_V = 0d0
+  Ga_V= 0d0    
+endif
 
 

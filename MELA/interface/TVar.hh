@@ -288,7 +288,7 @@ public:
 
     if (overwrite) reset();
     setPartonWeights(partonOneWeight_, partonTwoWeight_);
-    addMEArray(MEsq_);
+    addMEArray(MEsq_, factor);
   }
 
   void computeWeightedMEArray(){
@@ -330,6 +330,7 @@ private:
   double weightedMEsq[nmsq][nmsq];
   double sumME;
 };
+
 struct hzz4l_event_type{
   int PdgCode[4];
   TLorentzVector p[4];
@@ -338,34 +339,41 @@ struct hzz4l_event_type{
   double Xsec[10];
   double XsecErr[10];  
 };
+
 struct vh_event_type{ // ME is 2 -> 3
   int PdgCode[3];
   TLorentzVector p[3]; // H, V-daughter 1, V-daughter 2
   TLorentzVector pHdecay[4]; // H-daughter 1, H-daughter 2; optional: H-daughter 3, H-daughter 4
   int PdgCode_Hdecay[4];
 };
+
 struct tth_event_type{ // ME is 2 -> 8
   int PdgCode_tdecay[2][3];
   TLorentzVector p[7]; // H, tbar-daughters 1-3, t-daughters 1-3
 };
+
 struct mcfm_event_type{
   int PdgCode[8];
   TLorentzVector p[8];
   double pswt;
 };
+
 struct event_type{
   TLorentzVector p1,p2,ep,em,nu,nb;
   double PSWeight;
 };
+
 struct event_scales_type{
   TVar::EventScaleScheme renomalizationScheme;
   TVar::EventScaleScheme factorizationScheme;
   double ren_scale_factor;
   double fac_scale_factor;
 };
+
 struct anomcoup{
   double delg1_z, delg1_g, lambda_g, lambda_z, delk_g, delk_z_, tevscale;
 };
+
 struct EffHist{
   TH2F* els_eff_mc;
   TH2F* mus_eff_mc;

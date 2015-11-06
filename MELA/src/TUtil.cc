@@ -1471,3 +1471,8 @@ double SumMEPDF(const TLorentzVector p0, const TLorentzVector p1, double msq[nms
   return RcdME->getSumME();
 }
 
+void SetDecayModes(int first, int second){ __modmisc_MOD_setdecaymodes(&first, &second); }
+void GetDecayModes(int& first, int& second){ __modmisc_MOD_getdecaymodes(&first, &second); }
+
+
+
