@@ -1915,813 +1915,804 @@ void testME_FullMELA_MCFMBSMHiggs(int flavor=1){
 }
 
 
-void testME_FullMELA_BSMMCFMVBF(float multiplierWW=1, int flavor=0){
-  int erg_tev=8;
-  float mPOLE=125.6;
-  float wPOLE=4.15e-3;
-  char TREE_NAME[] = "SelectedTree";
-
-  Mela mela(erg_tev, mPOLE);
-
-  //TString cinput_main = "/scratch0/hep/ianderso/CJLST/140519/PRODFSR_8TeV";
-  //TFile* finput = new TFile(Form("%s/%s/HZZ4lTree_ZZTo%s.root", cinput_main.Data(), (flavor==0 ? "2mu2e" : "4e"), (flavor==0 ? "2e2mu" : "4e")), "read");
-  TString cinput_main = "/scratch0/hep/usarical/VBF-JHUGen-13TeV/LHC_13TeV_VBFHZZ4l/0-";
-  TFile* finput = new TFile(Form("%s/VBFH125toZZ4l_13TeV.root", cinput_main.Data()), "read");
-  TFile* foutput = new TFile(Form("HZZ4lTree_ZZTo%s_vbfMCFMJHUGenTest.root", (flavor==0 ? "2e2mu" : "4e")), "recreate");
-
-  TLorentzVector nullFourVector(0, 0, 0, 0);
-
-  float pvbf0plus_VAMCFM;
-  float pvbf0hplus_VAMCFM;
-  float pvbf0minus_VAMCFM;
-  float pvbf0_g1prime2_VAMCFM;
-  float pvbfg1g1prime2_VAMCFM;
-  float pvbfg1g1prime2_pi2_VAMCFM;
-  float pvbfg1g2_VAMCFM;
-  float pvbfg1g2_pi2_VAMCFM;
-  float pvbfg1g4_VAMCFM;
-  float pvbfg1g4_pi2_VAMCFM;
-
-  float pFullvbf0plus_VAMCFM[11][11]={ { 0 } };
-  float pFullvbf0hplus_VAMCFM[11][11]={ { 0 } };
-  float pFullvbf0minus_VAMCFM[11][11]={ { 0 } };
-  float pFullvbf0_g1prime2_VAMCFM[11][11]={ { 0 } };
-  float pFullvbfg1g1prime2_VAMCFM[11][11]={ { 0 } };
-  float pFullvbfg1g1prime2_pi2_VAMCFM[11][11]={ { 0 } };
-  float pFullvbfg1g2_VAMCFM[11][11]={ { 0 } };
-  float pFullvbfg1g2_pi2_VAMCFM[11][11]={ { 0 } };
-  float pFullvbfg1g4_VAMCFM[11][11]={ { 0 } };
-  float pFullvbfg1g4_pi2_VAMCFM[11][11]={ { 0 } };
-
-  float p0plus_VAMCFM;
-  float p0hplus_VAMCFM;
-  float p0minus_VAMCFM;
-  float p0_g1prime2_VAMCFM;
-  float pg1g1prime2_VAMCFM;
-  float pg1g1prime2_pi2_VAMCFM;
-  float pg1g2_VAMCFM;
-  float pg1g2_pi2_VAMCFM;
-  float pg1g4_VAMCFM;
-  float pg1g4_pi2_VAMCFM;
-
-  float pvbf0plus_VAJHU;
-  float pvbf0hplus_VAJHU;
-  float pvbf0minus_VAJHU;
-  float pvbf0_g1prime2_VAJHU;
-  float pvbfg1g1prime2_VAJHU;
-  float pvbfg1g1prime2_pi2_VAJHU;
-  float pvbfg1g2_VAJHU;
-  float pvbfg1g2_pi2_VAJHU;
-  float pvbfg1g4_VAJHU;
-  float pvbfg1g4_pi2_VAJHU;
-
-  float pFullvbf0plus_VAJHU[11][11]={ { 0 } };
-  float pFullvbf0hplus_VAJHU[11][11]={ { 0 } };
-  float pFullvbf0minus_VAJHU[11][11]={ { 0 } };
-  float pFullvbf0_g1prime2_VAJHU[11][11]={ { 0 } };
-  float pFullvbfg1g1prime2_VAJHU[11][11]={ { 0 } };
-  float pFullvbfg1g1prime2_pi2_VAJHU[11][11]={ { 0 } };
-  float pFullvbfg1g2_VAJHU[11][11]={ { 0 } };
-  float pFullvbfg1g2_pi2_VAJHU[11][11]={ { 0 } };
-  float pFullvbfg1g4_VAJHU[11][11]={ { 0 } };
-  float pFullvbfg1g4_pi2_VAJHU[11][11]={ { 0 } };
-
-  float p0plus_VAJHU;
-  float p0hplus_VAJHU;
-  float p0minus_VAJHU;
-  float p0_g1prime2_VAJHU;
-  float pg1g1prime2_VAJHU;
-  float pg1g1prime2_pi2_VAJHU;
-  float pg1g2_VAJHU;
-  float pg1g2_pi2_VAJHU;
-  float pg1g4_VAJHU;
-  float pg1g4_pi2_VAJHU;
-
-
-  float jet1Pt, jet2Pt;
-  float jet1px, jet1py, jet1pz, jet1E;
-  float jet2px, jet2py, jet2pz, jet2E;
-  float ZZPx, ZZPy, ZZPz, ZZE, dR;
-  short NJets30;
-  std::vector<double> * JetPt=0;
-  std::vector<double> * JetEta=0;
-  std::vector<double> * JetPhi=0;
-  std::vector<double> * JetMass=0;
-  std::vector<int> * JetId=0;
-  TBranch* bJetPt=0;
-  TBranch* bJetEta=0;
-  TBranch* bJetPhi=0;
-  TBranch* bJetMass=0;
-  TBranch* bJetId=0;
-
-  float mzz = 126.;
-  float m1 = 91.471450;
-  float m2 = 12.139782;
-  float h1 = 0.2682896;
-  float h2 = 0.1679779;
-  float phi = 1.5969792;
-  float hs = -0.727181;
-  float phi1 = 1.8828257;
-  int GenLep1Id, GenLep2Id, GenLep3Id, GenLep4Id;
-  float GenLep1Pt, GenLep2Pt, GenLep3Pt, GenLep4Pt;
-  float GenLep1Eta, GenLep2Eta, GenLep3Eta, GenLep4Eta;
-  float GenLep1Phi, GenLep2Phi, GenLep3Phi, GenLep4Phi;
-  float GenLep1Mass, GenLep2Mass, GenLep3Mass, GenLep4Mass;
-  float ZZPt, ZZPhi, ZZEta, DijetMass;
-
-  TTree* tree = (TTree*)finput->Get(TREE_NAME);
-  tree->SetBranchAddress("GenDijetMass", &DijetMass);
-  tree->SetBranchAddress("GenAssociatedParticleId", &JetId, &bJetId);
-  tree->SetBranchAddress("GenAssociatedParticlePt", &JetPt, &bJetPt);
-  tree->SetBranchAddress("GenAssociatedParticleEta", &JetEta, &bJetEta);
-  tree->SetBranchAddress("GenAssociatedParticlePhi", &JetPhi, &bJetPhi);
-  tree->SetBranchAddress("GenAssociatedParticleMass", &JetMass, &bJetMass);
-  tree->SetBranchAddress("GenLep1Id", &GenLep1Id);
-  tree->SetBranchAddress("GenLep1Mass", &GenLep1Mass);
-  tree->SetBranchAddress("GenLep1Pt", &GenLep1Pt);
-  tree->SetBranchAddress("GenLep1Eta", &GenLep1Eta);
-  tree->SetBranchAddress("GenLep1Phi", &GenLep1Phi);
-  tree->SetBranchAddress("GenLep2Id", &GenLep2Id);
-  tree->SetBranchAddress("GenLep2Mass", &GenLep2Mass);
-  tree->SetBranchAddress("GenLep2Pt", &GenLep2Pt);
-  tree->SetBranchAddress("GenLep2Eta", &GenLep2Eta);
-  tree->SetBranchAddress("GenLep2Phi", &GenLep2Phi);
-  tree->SetBranchAddress("GenLep3Id", &GenLep3Id);
-  tree->SetBranchAddress("GenLep3Mass", &GenLep3Mass);
-  tree->SetBranchAddress("GenLep3Pt", &GenLep3Pt);
-  tree->SetBranchAddress("GenLep3Eta", &GenLep3Eta);
-  tree->SetBranchAddress("GenLep3Phi", &GenLep3Phi);
-  tree->SetBranchAddress("GenLep4Id", &GenLep4Id);
-  tree->SetBranchAddress("GenLep4Mass", &GenLep4Mass);
-  tree->SetBranchAddress("GenLep4Pt", &GenLep4Pt);
-  tree->SetBranchAddress("GenLep4Eta", &GenLep4Eta);
-  tree->SetBranchAddress("GenLep4Phi", &GenLep4Phi);
-  tree->SetBranchAddress("GenHMass", &mzz);
-  tree->SetBranchAddress("GenZ1Mass", &m1);
-  tree->SetBranchAddress("GenZ2Mass", &m2);
-  tree->SetBranchAddress("GenhelcosthetaZ1", &h1);
-  tree->SetBranchAddress("GenhelcosthetaZ2", &h2);
-  tree->SetBranchAddress("Genhelphi", &phi);
-  tree->SetBranchAddress("Gencosthetastar", &hs);
-  tree->SetBranchAddress("GenphistarZ1", &phi1);
-
-/*
-  tree->SetBranchAddress("DiJetMass", &DijetMass);
-  tree->SetBranchAddress("NJets30", &NJets30);
-  tree->SetBranchAddress("JetPt", &JetPt, &bJetPt);
-  tree->SetBranchAddress("JetEta", &JetEta, &bJetEta);
-  tree->SetBranchAddress("JetPhi", &JetPhi, &bJetPhi);
-  tree->SetBranchAddress("JetMass", &JetMass, &bJetMass);
-  tree->SetBranchAddress("ZZMass", &mzz);
-  tree->SetBranchAddress("ZZPt", &ZZPt);
-  tree->SetBranchAddress("ZZEta", &ZZEta);
-  tree->SetBranchAddress("ZZPhi", &ZZPhi);
-  tree->SetBranchAddress("Z1Mass", &m1);
-  tree->SetBranchAddress("Z2Mass", &m2);
-  tree->SetBranchAddress("helcosthetaZ1", &h1);
-  tree->SetBranchAddress("helcosthetaZ2", &h2);
-  tree->SetBranchAddress("helphi", &phi);
-  tree->SetBranchAddress("costhetastar", &hs);
-  tree->SetBranchAddress("phistarZ1", &phi1);
-*/
-
-  TTree* newtree = new TTree("TestTree", "");
-  newtree->Branch("p0plus_VAJHU", &p0plus_VAJHU);
-  newtree->Branch("p0hplus_VAJHU", &p0hplus_VAJHU);
-  newtree->Branch("p0minus_VAJHU", &p0minus_VAJHU);
-  newtree->Branch("p0_g1prime2_VAJHU", &p0_g1prime2_VAJHU);
-  newtree->Branch("pg1g1prime2_VAJHU", &pg1g1prime2_VAJHU);
-  newtree->Branch("pg1g1prime2_pi2_VAJHU", &pg1g1prime2_pi2_VAJHU);
-  newtree->Branch("pg1g2_VAJHU", &pg1g2_VAJHU);
-  newtree->Branch("pg1g2_pi2_VAJHU", &pg1g2_pi2_VAJHU);
-  newtree->Branch("pg1g4_VAJHU", &pg1g4_VAJHU);
-  newtree->Branch("pg1g4_pi2_VAJHU", &pg1g4_pi2_VAJHU);
-  newtree->Branch("p0plus_VAMCFM", &p0plus_VAMCFM);
-  newtree->Branch("p0hplus_VAMCFM", &p0hplus_VAMCFM);
-  newtree->Branch("p0minus_VAMCFM", &p0minus_VAMCFM);
-  newtree->Branch("p0_g1prime2_VAMCFM", &p0_g1prime2_VAMCFM);
-  newtree->Branch("pg1g1prime2_VAMCFM", &pg1g1prime2_VAMCFM);
-  newtree->Branch("pg1g1prime2_pi2_VAMCFM", &pg1g1prime2_pi2_VAMCFM);
-  newtree->Branch("pg1g2_VAMCFM", &pg1g2_VAMCFM);
-  newtree->Branch("pg1g2_pi2_VAMCFM", &pg1g2_pi2_VAMCFM);
-  newtree->Branch("pg1g4_VAMCFM", &pg1g4_VAMCFM);
-  newtree->Branch("pg1g4_pi2_VAMCFM", &pg1g4_pi2_VAMCFM);
-  newtree->Branch("pvbf0plus_VAJHU", &pvbf0plus_VAJHU);
-  newtree->Branch("pvbf0hplus_VAJHU", &pvbf0hplus_VAJHU);
-  newtree->Branch("pvbf0minus_VAJHU", &pvbf0minus_VAJHU);
-  newtree->Branch("pvbf0_g1prime2_VAJHU", &pvbf0_g1prime2_VAJHU);
-  newtree->Branch("pvbfg1g1prime2_VAJHU", &pvbfg1g1prime2_VAJHU);
-  newtree->Branch("pvbfg1g1prime2_pi2_VAJHU", &pvbfg1g1prime2_pi2_VAJHU);
-  newtree->Branch("pvbfg1g2_VAJHU", &pvbfg1g2_VAJHU);
-  newtree->Branch("pvbfg1g2_pi2_VAJHU", &pvbfg1g2_pi2_VAJHU);
-  newtree->Branch("pvbfg1g4_VAJHU", &pvbfg1g4_VAJHU);
-  newtree->Branch("pvbfg1g4_pi2_VAJHU", &pvbfg1g4_pi2_VAJHU);
-  newtree->Branch("pvbf0plus_VAMCFM", &pvbf0plus_VAMCFM);
-  newtree->Branch("pvbf0hplus_VAMCFM", &pvbf0hplus_VAMCFM);
-  newtree->Branch("pvbf0minus_VAMCFM", &pvbf0minus_VAMCFM);
-  newtree->Branch("pvbf0_g1prime2_VAMCFM", &pvbf0_g1prime2_VAMCFM);
-  newtree->Branch("pvbfg1g1prime2_VAMCFM", &pvbfg1g1prime2_VAMCFM);
-  newtree->Branch("pvbfg1g1prime2_pi2_VAMCFM", &pvbfg1g1prime2_pi2_VAMCFM);
-  newtree->Branch("pvbfg1g2_VAMCFM", &pvbfg1g2_VAMCFM);
-  newtree->Branch("pvbfg1g2_pi2_VAMCFM", &pvbfg1g2_pi2_VAMCFM);
-  newtree->Branch("pvbfg1g4_VAMCFM", &pvbfg1g4_VAMCFM);
-  newtree->Branch("pvbfg1g4_pi2_VAMCFM", &pvbfg1g4_pi2_VAMCFM);
-
-  newtree->Branch("pFullvbf0plus_VAJHU", pFullvbf0plus_VAJHU,"pFullvbf0plus_VAJHU[11][11]/F");
-  newtree->Branch("pFullvbf0hplus_VAJHU", pFullvbf0hplus_VAJHU, "pFullvbf0hplus_VAJHU[11][11]/F");
-  newtree->Branch("pFullvbf0minus_VAJHU", pFullvbf0minus_VAJHU, "pFullvbf0minus_VAJHU[11][11]/F");
-  newtree->Branch("pFullvbf0_g1prime2_VAJHU", pFullvbf0_g1prime2_VAJHU, "pFullvbf0_g1prime2_VAJHU[11][11]/F");
-  newtree->Branch("pFullvbfg1g1prime2_VAJHU", pFullvbfg1g1prime2_VAJHU, "pFullvbfg1g1prime2_VAJHU[11][11]/F");
-  newtree->Branch("pFullvbfg1g1prime2_pi2_VAJHU", pFullvbfg1g1prime2_pi2_VAJHU, "pFullvbfg1g1prime2_pi2_VAJHU[11][11]/F");
-  newtree->Branch("pFullvbfg1g2_VAJHU", pFullvbfg1g2_VAJHU, "pFullvbfg1g2_VAJHU[11][11]/F");
-  newtree->Branch("pFullvbfg1g2_pi2_VAJHU", pFullvbfg1g2_pi2_VAJHU, "pFullvbfg1g2_pi2_VAJHU[11][11]/F");
-  newtree->Branch("pFullvbfg1g4_VAJHU", pFullvbfg1g4_VAJHU, "pFullvbfg1g4_VAJHU[11][11]/F");
-  newtree->Branch("pFullvbfg1g4_pi2_VAJHU", pFullvbfg1g4_pi2_VAJHU, "pFullvbfg1g4_pi2_VAJHU[11][11]/F");
-  newtree->Branch("pFullvbf0plus_VAMCFM", pFullvbf0plus_VAMCFM, "pFullvbf0plus_VAMCFM[11][11]/F");
-  newtree->Branch("pFullvbf0hplus_VAMCFM", pFullvbf0hplus_VAMCFM, "pFullvbf0hplus_VAMCFM[11][11]/F");
-  newtree->Branch("pFullvbf0minus_VAMCFM", pFullvbf0minus_VAMCFM, "pFullvbf0minus_VAMCFM[11][11]/F");
-  newtree->Branch("pFullvbf0_g1prime2_VAMCFM", pFullvbf0_g1prime2_VAMCFM, "pFullvbf0_g1prime2_VAMCFM[11][11]/F");
-  newtree->Branch("pFullvbfg1g1prime2_VAMCFM", pFullvbfg1g1prime2_VAMCFM, "pFullvbfg1g1prime2_VAMCFM[11][11]/F");
-  newtree->Branch("pFullvbfg1g1prime2_pi2_VAMCFM", pFullvbfg1g1prime2_pi2_VAMCFM, "pFullvbfg1g1prime2_pi2_VAMCFM[11][11]/F");
-  newtree->Branch("pFullvbfg1g2_VAMCFM", pFullvbfg1g2_VAMCFM, "pFullvbfg1g2_VAMCFM[11][11]/F");
-  newtree->Branch("pFullvbfg1g2_pi2_VAMCFM", pFullvbfg1g2_pi2_VAMCFM, "pFullvbfg1g2_pi2_VAMCFM[11][11]/F");
-  newtree->Branch("pFullvbfg1g4_VAMCFM", pFullvbfg1g4_VAMCFM, "pFullvbfg1g4_VAMCFM[11][11]/F");
-  newtree->Branch("pFullvbfg1g4_pi2_VAMCFM", pFullvbfg1g4_pi2_VAMCFM, "pFullvbfg1g4_pi2_VAMCFM[11][11]/F");
-
-  newtree->Branch("ZZMass", &mzz);
-  newtree->Branch("DijetMass", &DijetMass);
-
-  int nEntries = tree->GetEntries();
-  double selfDHggcoupl[SIZE_HGG][2] ={ { 0 } };
-  double selfDHvvcoupl[SIZE_HVV_VBF][2] ={ { 0 } };
-  double selfDHwwcoupl[SIZE_HWW_VBF][2] ={ { 0 } };
-  double selfDTotalHvvcoupl[SIZE_HVV][2] ={ { 0 } };
-  double selfDTotalHwwcoupl[SIZE_HVV][2] ={ { 0 } };
-  double ggvvcoupl[2]={ 0, 0 };
-  mela.setProcess(TVar::SelfDefine_spin0, TVar::JHUGen, TVar::ZZGG);
-  int recorded=0;
-  for (int ev = 0; ev < nEntries; ev++){
-    if (recorded>=1000) break;
-    tree->GetEntry(ev);
-    
-    /*
-    if (flavor == 1){
-      GenLep1Id=11;
-      GenLep2Id=-11;
-      GenLep3Id=11;
-      GenLep4Id=-11;
-    }
-    else{
-      GenLep1Id=13;
-      GenLep2Id=-13;
-      GenLep3Id=11;
-      GenLep4Id=-11;
-    }
-    TLorentzVector jet1(0, 0, 1e-3, 1e-3), jet2(0, 0, 1e-3, 1e-3), higgs(0, 0, 0, 0);
-    higgs.SetPtEtaPhiM(ZZPt, ZZEta, ZZPhi, mzz);
-
-    int lepIdOrdered[4]={ GenLep1Id, GenLep2Id, GenLep3Id, GenLep4Id };
-    float angularOrdered[8] ={ mzz, m1, m2, hs, h1, h2, phi, phi1 };
-    std::vector<TLorentzVector> pZZ4L = mela.calculate4Momentum((double)mzz, (double)m1, (double)m2, (double)acos(hs), (double)acos(h1), (double)acos(h2), (double)phi1, (double)phi);
-    TLorentzVector higgsCM = pZZ4L[0] + pZZ4L[1] + pZZ4L[2] + pZZ4L[3]; // ...because...
-    TLorentzVector higgsCM_boosted = higgsCM;
-    higgsCM_boosted.Boost(-higgsCM.BoostVector());
-    higgsCM_boosted.Boost(higgs.BoostVector());
-    for (int k=0; k<4; k++){
-      pZZ4L[k].Boost(-higgsCM.BoostVector());
-      pZZ4L[k].Boost(higgsCM_boosted.BoostVector());
-    }
-    TLorentzVector pZZ4LOrdered[4] ={ pZZ4L[0], pZZ4L[1], pZZ4L[2], pZZ4L[3] };
-    higgs.SetXYZT(higgsCM_boosted.X(), higgsCM_boosted.Y(), higgsCM_boosted.Z(), higgsCM_boosted.T());
-    */
-
-    if (flavor==1 && GenLep1Id!=GenLep3Id) continue;
-    else if (GenLep1Id==GenLep3Id) continue;
-
-    int lepIdOrdered[4]={ GenLep1Id, GenLep2Id, GenLep3Id, GenLep4Id };
-    float angularOrdered[8] ={ mzz, m1, m2, hs, h1, h2, phi, phi1 };
-
-    TLorentzVector pZZ4LOrdered[4];
-    TLorentzVector pZZ4LOrdered_CM[4];
-    pZZ4LOrdered[0].SetPtEtaPhiM(GenLep1Pt, GenLep1Eta, GenLep1Phi, GenLep1Mass);
-    pZZ4LOrdered[1].SetPtEtaPhiM(GenLep2Pt, GenLep2Eta, GenLep2Phi, GenLep2Mass);
-    pZZ4LOrdered[2].SetPtEtaPhiM(GenLep3Pt, GenLep3Eta, GenLep3Phi, GenLep3Mass);
-    pZZ4LOrdered[3].SetPtEtaPhiM(GenLep4Pt, GenLep4Eta, GenLep4Phi, GenLep4Mass);
-
-    TLorentzVector jet1(0, 0, 0, 0), jet2(0, 0, 0, 0), higgs(0, 0, 0, 0);
-    for (int i=0; i<4; i++) higgs = higgs + pZZ4LOrdered[i];
-
-    pZZ4LOrdered_CM[0].SetPtEtaPhiM(GenLep1Pt, GenLep1Eta, GenLep1Phi, GenLep1Mass);
-    pZZ4LOrdered_CM[1].SetPtEtaPhiM(GenLep2Pt, GenLep2Eta, GenLep2Phi, GenLep2Mass);
-    pZZ4LOrdered_CM[2].SetPtEtaPhiM(GenLep3Pt, GenLep3Eta, GenLep3Phi, GenLep3Mass);
-    pZZ4LOrdered_CM[3].SetPtEtaPhiM(GenLep4Pt, GenLep4Eta, GenLep4Phi, GenLep4Mass);
-    for (int i=0; i<4; i++) pZZ4LOrdered_CM[i].Boost(-higgs.BoostVector());
-    for (int i=0; i<4; i++) {
-      //cout << "pZZ4LOrdered[" << i << "]:\t" << pZZ4LOrdered[i].X() << '\t' << pZZ4LOrdered[i].Y() << '\t' << pZZ4LOrdered[i].Z() << '\t' << pZZ4LOrdered[i].T() << '\t' << pZZ4LOrdered[i].M() << '\n';
-    }
-    for (int i=0; i<4; i++) {
-      //cout << "pZZ4LOrdered_CM[" << i << "]:\t" << pZZ4LOrdered_CM[i].X() << '\t' << pZZ4LOrdered_CM[i].Y() << '\t' << pZZ4LOrdered_CM[i].Z() << '\t' << pZZ4LOrdered_CM[i].T() << '\t' << pZZ4LOrdered_CM[i].M() << '\n';
-    }
-
-    //if (JetPt->size()>=2 && NJets30>=2 && DijetMass>150){
-    if (DijetMass>150){
-      //cout << higgs.M() << '\t' << (pZZ4LOrdered[0]+pZZ4LOrdered[1]+pZZ4LOrdered[2]+pZZ4LOrdered[3]).M() << endl;
-
-      jet1.SetPtEtaPhiM(JetPt->at(0), JetEta->at(0), JetPhi->at(0), JetMass->at(0));
-      jet2.SetPtEtaPhiM(JetPt->at(1), JetEta->at(1), JetPhi->at(1), JetMass->at(1));
-      TLorentzVector myjets[2]={ jet1, jet2 };
-      //int myjetids[2]={ 0 };
-      int myjetids[2]={ JetId->at(0), JetId->at(1) };
-
-      for (int i=0; i<2; i++) {
-        //cout << "myjets[" << i << "]:\t" << myjets[i].X() << '\t' << myjets[i].Y() << '\t' << myjets[i].Z() << '\t' << myjets[i].T() << '\t' << myjets[i].M() << '\n';
-      }
-
-      mela.setProcess(TVar::SelfDefine_spin0, TVar::JHUGen, TVar::ZZGG);
-
-      for (int ii = 0; ii < SIZE_HVV; ii++){ for (int jj = 0; jj < 2; jj++) selfDTotalHvvcoupl[ii][jj] = 0; }
-      selfDTotalHvvcoupl[0][0]=1;
-      mela.setMelaHiggsWidth(wPOLE);
-      p0plus_VAJHU = getJHUGenMELAWeight(mela, lepIdOrdered, angularOrdered, selfDTotalHvvcoupl);
-/*
-      if (recorded==0){
-        mela.setProcess(TVar::HSMHiggs, TVar::JHUGen, TVar::ZZGG);
-        mela.setMelaHiggsWidth(wPOLE);
-        float tmpProb=0;
-        mela.computeP(
-          pZZ4LOrdered_CM[0], lepIdOrdered[0],
-          pZZ4LOrdered_CM[1], lepIdOrdered[1],
-          pZZ4LOrdered_CM[2], lepIdOrdered[2],
-          pZZ4LOrdered_CM[3], lepIdOrdered[3],
-          tmpProb
-          );
-        cout << higgs.Z() << '\t' << p0plus_VAJHU << '\t' << tmpProb << '\t' << p0plus_VAJHU/tmpProb << endl;
-        mela.setProcess(TVar::SelfDefine_spin0, TVar::JHUGen, TVar::ZZGG);
-      }
-*/
-/*
-      for (int ii = 0; ii < SIZE_HVV; ii++){ for (int jj = 0; jj < 2; jj++) selfDTotalHvvcoupl[ii][jj] = 0; }
-      selfDTotalHvvcoupl[1][0]=1.638;
-      mela.setMelaHiggsWidth(wPOLE);
-      p0hplus_VAJHU = getJHUGenMELAWeight(mela, lepIdOrdered, angularOrdered, selfDTotalHvvcoupl);
-
-      for (int ii = 0; ii < SIZE_HVV; ii++){ for (int jj = 0; jj < 2; jj++) selfDTotalHvvcoupl[ii][jj] = 0; }
-      selfDTotalHvvcoupl[3][0]=2.521;
-      mela.setMelaHiggsWidth(wPOLE);
-      p0minus_VAJHU = getJHUGenMELAWeight(mela, lepIdOrdered, angularOrdered, selfDTotalHvvcoupl);
-*/
-      for (int ii = 0; ii < SIZE_HVV; ii++){ for (int jj = 0; jj < 2; jj++) selfDTotalHvvcoupl[ii][jj] = 0; }
-      selfDTotalHvvcoupl[11][0]=-12046.01;
-      mela.setMelaHiggsWidth(wPOLE);
-      p0_g1prime2_VAJHU = getJHUGenMELAWeight(mela, lepIdOrdered, angularOrdered, selfDTotalHvvcoupl);
-
-/*
-      for (int ii = 0; ii < SIZE_HVV; ii++){ for (int jj = 0; jj < 2; jj++) selfDTotalHvvcoupl[ii][jj] = 0; }
-      selfDTotalHvvcoupl[0][0]=1;
-      selfDTotalHvvcoupl[1][0]=1.638;
-      mela.setMelaHiggsWidth(wPOLE);
-      pg1g2_VAJHU = getJHUGenMELAWeight(mela, lepIdOrdered, angularOrdered, selfDTotalHvvcoupl);
-
-      for (int ii = 0; ii < SIZE_HVV; ii++){ for (int jj = 0; jj < 2; jj++) selfDTotalHvvcoupl[ii][jj] = 0; }
-      selfDTotalHvvcoupl[0][0]=1;
-      selfDTotalHvvcoupl[1][1]=1.638;
-      mela.setMelaHiggsWidth(wPOLE);
-      pg1g2_pi2_VAJHU = getJHUGenMELAWeight(mela, lepIdOrdered, angularOrdered, selfDTotalHvvcoupl);
-
-      for (int ii = 0; ii < SIZE_HVV; ii++){ for (int jj = 0; jj < 2; jj++) selfDTotalHvvcoupl[ii][jj] = 0; }
-      selfDTotalHvvcoupl[0][0]=1;
-      selfDTotalHvvcoupl[3][0]=2.521;
-      mela.setMelaHiggsWidth(wPOLE);
-      pg1g4_VAJHU = getJHUGenMELAWeight(mela, lepIdOrdered, angularOrdered, selfDTotalHvvcoupl);
-
-      for (int ii = 0; ii < SIZE_HVV; ii++){ for (int jj = 0; jj < 2; jj++) selfDTotalHvvcoupl[ii][jj] = 0; }
-      selfDTotalHvvcoupl[0][0]=1;
-      selfDTotalHvvcoupl[3][1]=2.521;
-      mela.setMelaHiggsWidth(wPOLE);
-      pg1g4_pi2_VAJHU = getJHUGenMELAWeight(mela, lepIdOrdered, angularOrdered, selfDTotalHvvcoupl);
-*/
-
-      for (int ii = 0; ii < SIZE_HVV; ii++){ for (int jj = 0; jj < 2; jj++) selfDTotalHvvcoupl[ii][jj] = 0; }
-      selfDTotalHvvcoupl[0][0]=1;
-      selfDTotalHvvcoupl[11][0]=-12046.01;
-      mela.setMelaHiggsWidth(wPOLE);
-      pg1g1prime2_VAJHU = getJHUGenMELAWeight(mela, lepIdOrdered, angularOrdered, selfDTotalHvvcoupl);
-
-      for (int ii = 0; ii < SIZE_HVV; ii++){ for (int jj = 0; jj < 2; jj++) selfDTotalHvvcoupl[ii][jj] = 0; }
-      selfDTotalHvvcoupl[0][0]=1;
-      selfDTotalHvvcoupl[11][1]=-12046.01;
-      mela.setMelaHiggsWidth(wPOLE);
-      pg1g1prime2_pi2_VAJHU = getJHUGenMELAWeight(mela, lepIdOrdered, angularOrdered, selfDTotalHvvcoupl);
-
-
-// VBF JHUGen
-      mela.setProcess(TVar::SelfDefine_spin0, TVar::JHUGen, TVar::JJVBF);
-
-      for (int xx = 0; xx < SIZE_HVV_VBF; xx++){ for (int yy = 0; yy < 2; yy++) selfDHvvcoupl[xx][yy] = 0; }
-      for (int xx = 0; xx < SIZE_HWW_VBF; xx++){ for (int yy = 0; yy < 2; yy++) selfDHwwcoupl[xx][yy] = 0; }
-      selfDHvvcoupl[0][0]=1;
-      selfDHwwcoupl[0][0]=1.*multiplierWW;
-      mela.computeProdP(jet1, 0, jet2, 0, higgs, 25, nullFourVector, 0, selfDHggcoupl, selfDHvvcoupl, selfDHwwcoupl, pvbf0plus_VAJHU);
-      pvbf0plus_VAJHU *= p0plus_VAJHU;
-      me_record rcd_pvbf0plus_VAJHU = mela.getFullMERecord();
-      for (int xx=0; xx<11; xx++){
-        for (int yy=0; yy<11; yy++){
-          (rcd_pvbf0plus_VAJHU.MEsq)[xx][yy] *= p0plus_VAJHU;
-          (rcd_pvbf0plus_VAJHU.weightedMEsq)[xx][yy] *= p0plus_VAJHU;
-        }
-      }
-
-/*
-      for (int xx = 0; xx < SIZE_HVV_VBF; xx++){ for (int yy = 0; yy < 2; yy++) selfDHvvcoupl[xx][yy] = 0; }
-      for (int xx = 0; xx < SIZE_HWW_VBF; xx++){ for (int yy = 0; yy < 2; yy++) selfDHwwcoupl[xx][yy] = 0; }
-      selfDHvvcoupl[1][0]=1.638;
-      selfDHwwcoupl[1][0]=1.638*multiplierWW;
-      mela.computeProdP(jet1, 0, jet2, 0, higgs, 25, nullFourVector, 0, selfDHggcoupl, selfDHvvcoupl, selfDHwwcoupl, pvbf0hplus_VAJHU);
-      pvbf0hplus_VAJHU *= p0hplus_VAJHU;
-
-      for (int xx = 0; xx < SIZE_HVV_VBF; xx++){ for (int yy = 0; yy < 2; yy++) selfDHvvcoupl[xx][yy] = 0; }
-      for (int xx = 0; xx < SIZE_HWW_VBF; xx++){ for (int yy = 0; yy < 2; yy++) selfDHwwcoupl[xx][yy] = 0; }
-      selfDHvvcoupl[3][0]=2.521;
-      selfDHwwcoupl[3][0]=2.521*multiplierWW;
-      mela.computeProdP(jet1, 0, jet2, 0, higgs, 25, nullFourVector, 0, selfDHggcoupl, selfDHvvcoupl, selfDHwwcoupl, pvbf0minus_VAJHU);
-      pvbf0minus_VAJHU *= p0minus_VAJHU;
-
-*/
-      for (int xx = 0; xx < SIZE_HVV_VBF; xx++){ for (int yy = 0; yy < 2; yy++) selfDHvvcoupl[xx][yy] = 0; }
-      for (int xx = 0; xx < SIZE_HWW_VBF; xx++){ for (int yy = 0; yy < 2; yy++) selfDHwwcoupl[xx][yy] = 0; }
-      selfDHvvcoupl[11][0]=-12046.01;
-      selfDHwwcoupl[11][0]=-12046.01*multiplierWW;
-      mela.computeProdP(jet1, 0, jet2, 0, higgs, 25, nullFourVector, 0, selfDHggcoupl, selfDHvvcoupl, selfDHwwcoupl, pvbf0_g1prime2_VAJHU);
-      pvbf0_g1prime2_VAJHU *= p0_g1prime2_VAJHU;
-      me_record rcd_pvbf0_g1prime2_VAJHU = mela.getFullMERecord();
-      for (int xx=0; xx<11; xx++){
-        for (int yy=0; yy<11; yy++){
-          (rcd_pvbf0_g1prime2_VAJHU.MEsq)[xx][yy] *= p0_g1prime2_VAJHU;
-          (rcd_pvbf0_g1prime2_VAJHU.weightedMEsq)[xx][yy] *= p0_g1prime2_VAJHU;
-        }
-      }
-
-
-/*
-      for (int xx = 0; xx < SIZE_HVV_VBF; xx++){ for (int yy = 0; yy < 2; yy++) selfDHvvcoupl[xx][yy] = 0; }
-      for (int xx = 0; xx < SIZE_HWW_VBF; xx++){ for (int yy = 0; yy < 2; yy++) selfDHwwcoupl[xx][yy] = 0; }
-      selfDHvvcoupl[0][0]=1;
-      selfDHwwcoupl[0][0]=1.*multiplierWW;
-      selfDHvvcoupl[1][0]=1.638;
-      selfDHwwcoupl[1][0]=1.638*multiplierWW;
-      mela.computeProdP(jet1, 0, jet2, 0, higgs, 25, nullFourVector, 0, selfDHggcoupl, selfDHvvcoupl, selfDHwwcoupl, pvbfg1g2_VAJHU);
-      pvbfg1g2_VAJHU *= pg1g2_VAJHU;
-
-      for (int xx = 0; xx < SIZE_HVV_VBF; xx++){ for (int yy = 0; yy < 2; yy++) selfDHvvcoupl[xx][yy] = 0; }
-      for (int xx = 0; xx < SIZE_HWW_VBF; xx++){ for (int yy = 0; yy < 2; yy++) selfDHwwcoupl[xx][yy] = 0; }
-      selfDHvvcoupl[0][0]=1;
-      selfDHwwcoupl[0][0]=1.*multiplierWW;
-      selfDHvvcoupl[1][1]=1.638;
-      selfDHwwcoupl[1][1]=1.638*multiplierWW;
-      mela.computeProdP(jet1, 0, jet2, 0, higgs, 25, nullFourVector, 0, selfDHggcoupl, selfDHvvcoupl, selfDHwwcoupl, pvbfg1g2_pi2_VAJHU);
-      pvbfg1g2_pi2_VAJHU *= pg1g2_pi2_VAJHU;
-
-      for (int xx = 0; xx < SIZE_HVV_VBF; xx++){ for (int yy = 0; yy < 2; yy++) selfDHvvcoupl[xx][yy] = 0; }
-      for (int xx = 0; xx < SIZE_HWW_VBF; xx++){ for (int yy = 0; yy < 2; yy++) selfDHwwcoupl[xx][yy] = 0; }
-      selfDHvvcoupl[0][0]=1;
-      selfDHwwcoupl[0][0]=1.*multiplierWW;
-      selfDHvvcoupl[3][0]=2.521;
-      selfDHwwcoupl[3][0]=2.521*multiplierWW;
-      mela.computeProdP(jet1, 0, jet2, 0, higgs, 25, nullFourVector, 0, selfDHggcoupl, selfDHvvcoupl, selfDHwwcoupl, pvbfg1g4_VAJHU);
-      pvbfg1g4_VAJHU *= pg1g4_VAJHU;
-
-      for (int xx = 0; xx < SIZE_HVV_VBF; xx++){ for (int yy = 0; yy < 2; yy++) selfDHvvcoupl[xx][yy] = 0; }
-      for (int xx = 0; xx < SIZE_HWW_VBF; xx++){ for (int yy = 0; yy < 2; yy++) selfDHwwcoupl[xx][yy] = 0; }
-      selfDHvvcoupl[0][0]=1;
-      selfDHwwcoupl[0][0]=1.*multiplierWW;
-      selfDHvvcoupl[3][1]=2.521;
-      selfDHwwcoupl[3][1]=2.521*multiplierWW;
-      mela.computeProdP(jet1, 0, jet2, 0, higgs, 25, nullFourVector, 0, selfDHggcoupl, selfDHvvcoupl, selfDHwwcoupl, pvbfg1g4_pi2_VAJHU);
-      pvbfg1g4_pi2_VAJHU *= pg1g4_pi2_VAJHU;
-
-*/
-      for (int xx = 0; xx < SIZE_HVV_VBF; xx++){ for (int yy = 0; yy < 2; yy++) selfDHvvcoupl[xx][yy] = 0; }
-      for (int xx = 0; xx < SIZE_HWW_VBF; xx++){ for (int yy = 0; yy < 2; yy++) selfDHwwcoupl[xx][yy] = 0; }
-      selfDHvvcoupl[0][0]=1;
-      selfDHwwcoupl[0][0]=1.*multiplierWW;
-      selfDHvvcoupl[11][0]=-12046.01;
-      selfDHwwcoupl[11][0]=-12046.01*multiplierWW;
-      mela.computeProdP(jet1, 0, jet2, 0, higgs, 25, nullFourVector, 0, selfDHggcoupl, selfDHvvcoupl, selfDHwwcoupl, pvbfg1g1prime2_VAJHU);
-      pvbfg1g1prime2_VAJHU *= pg1g1prime2_VAJHU;
-      me_record rcd_pvbfg1g1prime2_VAJHU = mela.getFullMERecord();
-      for (int xx=0; xx<11; xx++){
-        for (int yy=0; yy<11; yy++){
-          (rcd_pvbfg1g1prime2_VAJHU.MEsq)[xx][yy] *= pg1g1prime2_VAJHU;
-          (rcd_pvbfg1g1prime2_VAJHU.weightedMEsq)[xx][yy] *= pg1g1prime2_VAJHU;
-        }
-      }
-
-      for (int xx = 0; xx < SIZE_HVV_VBF; xx++){ for (int yy = 0; yy < 2; yy++) selfDHvvcoupl[xx][yy] = 0; }
-      for (int xx = 0; xx < SIZE_HWW_VBF; xx++){ for (int yy = 0; yy < 2; yy++) selfDHwwcoupl[xx][yy] = 0; }
-      selfDHvvcoupl[0][0]=1;
-      selfDHwwcoupl[0][0]=1.*multiplierWW;
-      selfDHvvcoupl[11][1]=-12046.01;
-      selfDHwwcoupl[11][1]=-12046.01*multiplierWW;
-      mela.computeProdP(jet1, 0, jet2, 0, higgs, 25, nullFourVector, 0, selfDHggcoupl, selfDHvvcoupl, selfDHwwcoupl, pvbfg1g1prime2_pi2_VAJHU);
-      pvbfg1g1prime2_pi2_VAJHU *= pg1g1prime2_pi2_VAJHU;
-      me_record rcd_pvbfg1g1prime2_pi2_VAJHU = mela.getFullMERecord();
-      for (int xx=0; xx<11; xx++){
-        for (int yy=0; yy<11; yy++){
-          (rcd_pvbfg1g1prime2_pi2_VAJHU.MEsq)[xx][yy] *= pg1g1prime2_pi2_VAJHU;
-          (rcd_pvbfg1g1prime2_pi2_VAJHU.weightedMEsq)[xx][yy] *= pg1g1prime2_pi2_VAJHU;
-        }
-      }
-
-
-// VBF MCFM
-      mela.setProcess(TVar::HSMHiggs, TVar::MCFM, TVar::JJVBF);
-
-      if (recorded==0) cout << "SM MCFM" << endl;
-      for (int xx = 0; xx < SIZE_HVV; xx++){ for (int yy = 0; yy < 2; yy++) selfDTotalHvvcoupl[xx][yy] = 0; }
-      for (int xx = 0; xx < SIZE_HVV; xx++){ for (int yy = 0; yy < 2; yy++) selfDTotalHwwcoupl[xx][yy] = 0; }
-      selfDTotalHvvcoupl[0][0]=1;
-      selfDTotalHwwcoupl[0][0]=1.*multiplierWW;
-      mela.computeProdDecP(myjets, pZZ4LOrdered, myjetids, lepIdOrdered, selfDTotalHvvcoupl, selfDTotalHwwcoupl, pvbf0plus_VAMCFM);
-      me_record rcd_pvbf0plus_VAMCFM = mela.getFullMERecord();
-
-/*
-      if (recorded==0) cout << "0h+ MCFM" << endl;
-      for (int xx = 0; xx < SIZE_HVV; xx++){ for (int yy = 0; yy < 2; yy++) selfDTotalHvvcoupl[xx][yy] = 0; }
-      for (int xx = 0; xx < SIZE_HVV; xx++){ for (int yy = 0; yy < 2; yy++) selfDTotalHwwcoupl[xx][yy] = 0; }
-      selfDTotalHvvcoupl[1][0]=1.638;
-      selfDTotalHwwcoupl[1][0]=1.638*multiplierWW;
-      mela.computeProdDecP(myjets, pZZ4LOrdered, myjetids, lepIdOrdered, selfDTotalHvvcoupl, selfDTotalHwwcoupl, pvbf0hplus_VAMCFM);
-
-      for (int xx = 0; xx < SIZE_HVV; xx++){ for (int yy = 0; yy < 2; yy++) selfDTotalHvvcoupl[xx][yy] = 0; }
-      for (int xx = 0; xx < SIZE_HVV; xx++){ for (int yy = 0; yy < 2; yy++) selfDTotalHwwcoupl[xx][yy] = 0; }
-      selfDTotalHvvcoupl[3][0]=2.521;
-      selfDTotalHwwcoupl[3][0]=2.521*multiplierWW;
-      mela.computeProdDecP(myjets, pZZ4LOrdered, myjetids, lepIdOrdered, selfDTotalHvvcoupl, selfDTotalHwwcoupl, pvbf0minus_VAMCFM);
-*/
-
-      for (int xx = 0; xx < SIZE_HVV; xx++){ for (int yy = 0; yy < 2; yy++) selfDTotalHvvcoupl[xx][yy] = 0; }
-      for (int xx = 0; xx < SIZE_HVV; xx++){ for (int yy = 0; yy < 2; yy++) selfDTotalHwwcoupl[xx][yy] = 0; }
-      selfDTotalHvvcoupl[11][0]=-12046.01;
-      selfDTotalHwwcoupl[11][0]=-12046.01*multiplierWW;
-      mela.computeProdDecP(myjets, pZZ4LOrdered, myjetids, lepIdOrdered, selfDTotalHvvcoupl, selfDTotalHwwcoupl, pvbf0_g1prime2_VAMCFM);
-      me_record rcd_pvbf0_g1prime2_VAMCFM = mela.getFullMERecord();
-
-/*
-      for (int xx = 0; xx < SIZE_HVV; xx++){ for (int yy = 0; yy < 2; yy++) selfDTotalHvvcoupl[xx][yy] = 0; }
-      for (int xx = 0; xx < SIZE_HVV; xx++){ for (int yy = 0; yy < 2; yy++) selfDTotalHwwcoupl[xx][yy] = 0; }
-      selfDTotalHvvcoupl[0][0]=1;
-      selfDTotalHwwcoupl[0][0]=1.*multiplierWW;
-      selfDTotalHvvcoupl[1][0]=1.638;
-      selfDTotalHwwcoupl[1][0]=1.638*multiplierWW;
-      mela.computeProdDecP(myjets, pZZ4LOrdered, myjetids, lepIdOrdered, selfDTotalHvvcoupl, selfDTotalHwwcoupl, pvbfg1g2_VAMCFM);
-
-      for (int xx = 0; xx < SIZE_HVV; xx++){ for (int yy = 0; yy < 2; yy++) selfDTotalHvvcoupl[xx][yy] = 0; }
-      for (int xx = 0; xx < SIZE_HVV; xx++){ for (int yy = 0; yy < 2; yy++) selfDTotalHwwcoupl[xx][yy] = 0; }
-      selfDTotalHvvcoupl[0][0]=1;
-      selfDTotalHwwcoupl[0][0]=1.*multiplierWW;
-      selfDTotalHvvcoupl[1][1]=1.638;
-      selfDTotalHwwcoupl[1][1]=1.638*multiplierWW;
-      mela.computeProdDecP(myjets, pZZ4LOrdered, myjetids, lepIdOrdered, selfDTotalHvvcoupl, selfDTotalHwwcoupl, pvbfg1g2_pi2_VAMCFM);
-
-      for (int xx = 0; xx < SIZE_HVV; xx++){ for (int yy = 0; yy < 2; yy++) selfDTotalHvvcoupl[xx][yy] = 0; }
-      for (int xx = 0; xx < SIZE_HVV; xx++){ for (int yy = 0; yy < 2; yy++) selfDTotalHwwcoupl[xx][yy] = 0; }
-      selfDTotalHvvcoupl[0][0]=1;
-      selfDTotalHwwcoupl[0][0]=1.*multiplierWW;
-      selfDTotalHvvcoupl[3][0]=2.521;
-      selfDTotalHwwcoupl[3][0]=2.521*multiplierWW;
-      mela.computeProdDecP(myjets, pZZ4LOrdered, myjetids, lepIdOrdered, selfDTotalHvvcoupl, selfDTotalHwwcoupl, pvbfg1g4_VAMCFM);
-
-      for (int xx = 0; xx < SIZE_HVV; xx++){ for (int yy = 0; yy < 2; yy++) selfDTotalHvvcoupl[xx][yy] = 0; }
-      for (int xx = 0; xx < SIZE_HVV; xx++){ for (int yy = 0; yy < 2; yy++) selfDTotalHwwcoupl[xx][yy] = 0; }
-      selfDTotalHvvcoupl[0][0]=1;
-      selfDTotalHwwcoupl[0][0]=1.*multiplierWW;
-      selfDTotalHvvcoupl[3][1]=2.521;
-      selfDTotalHwwcoupl[3][1]=2.521*multiplierWW;
-      mela.computeProdDecP(myjets, pZZ4LOrdered, myjetids, lepIdOrdered, selfDTotalHvvcoupl, selfDTotalHwwcoupl, pvbfg1g4_pi2_VAMCFM);
-
-*/
-      for (int xx = 0; xx < SIZE_HVV; xx++){ for (int yy = 0; yy < 2; yy++) selfDTotalHvvcoupl[xx][yy] = 0; }
-      for (int xx = 0; xx < SIZE_HVV; xx++){ for (int yy = 0; yy < 2; yy++) selfDTotalHwwcoupl[xx][yy] = 0; }
-      selfDTotalHvvcoupl[0][0]=1;
-      selfDTotalHwwcoupl[0][0]=1.*multiplierWW;
-      selfDTotalHvvcoupl[11][0]=-12046.01;
-      selfDTotalHwwcoupl[11][0]=-12046.01*multiplierWW;
-      mela.computeProdDecP(myjets, pZZ4LOrdered, myjetids, lepIdOrdered, selfDTotalHvvcoupl, selfDTotalHwwcoupl, pvbfg1g1prime2_VAMCFM);
-      me_record rcd_pvbfg1g1prime2_VAMCFM = mela.getFullMERecord();
-
-      for (int xx = 0; xx < SIZE_HVV; xx++){ for (int yy = 0; yy < 2; yy++) selfDTotalHvvcoupl[xx][yy] = 0; }
-      for (int xx = 0; xx < SIZE_HVV; xx++){ for (int yy = 0; yy < 2; yy++) selfDTotalHwwcoupl[xx][yy] = 0; }
-      selfDTotalHvvcoupl[0][0]=1;
-      selfDTotalHwwcoupl[0][0]=1.*multiplierWW;
-      selfDTotalHvvcoupl[11][1]=-12046.01;
-      selfDTotalHwwcoupl[11][1]=-12046.01*multiplierWW;
-      mela.computeProdDecP(myjets, pZZ4LOrdered, myjetids, lepIdOrdered, selfDTotalHvvcoupl, selfDTotalHwwcoupl, pvbfg1g1prime2_pi2_VAMCFM);
-      me_record rcd_pvbfg1g1prime2_pi2_VAMCFM = mela.getFullMERecord();
-
-
-      mela.setProcess(TVar::HSMHiggs, TVar::MCFM, TVar::ZZGG);
-
-      for (int ii = 0; ii < SIZE_HVV; ii++){ for (int jj = 0; jj < 2; jj++) selfDTotalHvvcoupl[ii][jj] = 0; }
-      selfDTotalHvvcoupl[0][0]=1;
-      mela.setMelaHiggsWidth(wPOLE);
-      p0plus_VAMCFM = getJHUGenMELAWeight(mela, lepIdOrdered, angularOrdered, selfDTotalHvvcoupl);
-
-/*
-      for (int ii = 0; ii < SIZE_HVV; ii++){ for (int jj = 0; jj < 2; jj++) selfDTotalHvvcoupl[ii][jj] = 0; }
-      selfDTotalHvvcoupl[1][0]=1.638;
-      mela.setMelaHiggsWidth(wPOLE);
-      p0hplus_VAMCFM = getJHUGenMELAWeight(mela, lepIdOrdered, angularOrdered, selfDTotalHvvcoupl);
-
-
-      for (int ii = 0; ii < SIZE_HVV; ii++){ for (int jj = 0; jj < 2; jj++) selfDTotalHvvcoupl[ii][jj] = 0; }
-      selfDTotalHvvcoupl[3][0]=2.521;
-      mela.setMelaHiggsWidth(wPOLE);
-      p0minus_VAMCFM = getJHUGenMELAWeight(mela, lepIdOrdered, angularOrdered, selfDTotalHvvcoupl);
-*/
-
-      for (int ii = 0; ii < SIZE_HVV; ii++){ for (int jj = 0; jj < 2; jj++) selfDTotalHvvcoupl[ii][jj] = 0; }
-      selfDTotalHvvcoupl[11][0]=-12046.01;
-      mela.setMelaHiggsWidth(wPOLE);
-      p0_g1prime2_VAMCFM = getJHUGenMELAWeight(mela, lepIdOrdered, angularOrdered, selfDTotalHvvcoupl);
-
-
-/*
-      for (int ii = 0; ii < SIZE_HVV; ii++){ for (int jj = 0; jj < 2; jj++) selfDTotalHvvcoupl[ii][jj] = 0; }
-      selfDTotalHvvcoupl[0][0]=1;
-      selfDTotalHvvcoupl[1][0]=1.638;
-      mela.setMelaHiggsWidth(wPOLE);
-      pg1g2_VAMCFM = getJHUGenMELAWeight(mela, lepIdOrdered, angularOrdered, selfDTotalHvvcoupl);
-
-      for (int ii = 0; ii < SIZE_HVV; ii++){ for (int jj = 0; jj < 2; jj++) selfDTotalHvvcoupl[ii][jj] = 0; }
-      selfDTotalHvvcoupl[0][0]=1;
-      selfDTotalHvvcoupl[1][1]=1.638;
-      mela.setMelaHiggsWidth(wPOLE);
-      pg1g2_pi2_VAMCFM = getJHUGenMELAWeight(mela, lepIdOrdered, angularOrdered, selfDTotalHvvcoupl);
-
-      for (int ii = 0; ii < SIZE_HVV; ii++){ for (int jj = 0; jj < 2; jj++) selfDTotalHvvcoupl[ii][jj] = 0; }
-      selfDTotalHvvcoupl[0][0]=1;
-      selfDTotalHvvcoupl[3][0]=2.521;
-      mela.setMelaHiggsWidth(wPOLE);
-      pg1g4_VAMCFM = getJHUGenMELAWeight(mela, lepIdOrdered, angularOrdered, selfDTotalHvvcoupl);
-
-      for (int ii = 0; ii < SIZE_HVV; ii++){ for (int jj = 0; jj < 2; jj++) selfDTotalHvvcoupl[ii][jj] = 0; }
-      selfDTotalHvvcoupl[0][0]=1;
-      selfDTotalHvvcoupl[3][1]=2.521;
-      mela.setMelaHiggsWidth(wPOLE);
-      pg1g4_pi2_VAMCFM = getJHUGenMELAWeight(mela, lepIdOrdered, angularOrdered, selfDTotalHvvcoupl);
-*/
-
-      for (int ii = 0; ii < SIZE_HVV; ii++){ for (int jj = 0; jj < 2; jj++) selfDTotalHvvcoupl[ii][jj] = 0; }
-      selfDTotalHvvcoupl[0][0]=1;
-      selfDTotalHvvcoupl[11][0]=-12046.01;
-      mela.setMelaHiggsWidth(wPOLE);
-      pg1g1prime2_VAMCFM = getJHUGenMELAWeight(mela, lepIdOrdered, angularOrdered, selfDTotalHvvcoupl);
-
-
-      for (int ii = 0; ii < SIZE_HVV; ii++){ for (int jj = 0; jj < 2; jj++) selfDTotalHvvcoupl[ii][jj] = 0; }
-      selfDTotalHvvcoupl[0][0]=1;
-      selfDTotalHvvcoupl[11][1]=-12046.01;
-      mela.setMelaHiggsWidth(wPOLE);
-      pg1g1prime2_pi2_VAMCFM = getJHUGenMELAWeight(mela, lepIdOrdered, angularOrdered, selfDTotalHvvcoupl);
-
-
-      if (recorded==0){
-
-      }
-
-
-      pg1g2_VAJHU -= (p0plus_VAJHU + p0hplus_VAJHU);
-      pg1g2_pi2_VAJHU -= (p0plus_VAJHU + p0hplus_VAJHU);
-      pg1g4_VAJHU -= (p0plus_VAJHU + p0minus_VAJHU);
-      pg1g4_pi2_VAJHU -= (p0plus_VAJHU + p0minus_VAJHU);
-      pg1g1prime2_VAJHU -= (p0plus_VAJHU + p0_g1prime2_VAJHU);
-      pg1g1prime2_pi2_VAJHU -= (p0plus_VAJHU + p0_g1prime2_VAJHU);
-      pg1g2_VAMCFM -= (p0plus_VAMCFM + p0hplus_VAMCFM);
-      pg1g2_pi2_VAMCFM -= (p0plus_VAMCFM + p0hplus_VAMCFM);
-      pg1g4_VAMCFM -= (p0plus_VAMCFM + p0minus_VAMCFM);
-      pg1g4_pi2_VAMCFM -= (p0plus_VAMCFM + p0minus_VAMCFM);
-      pg1g1prime2_VAMCFM -= (p0plus_VAMCFM + p0_g1prime2_VAMCFM);
-      pg1g1prime2_pi2_VAMCFM -= (p0plus_VAMCFM + p0_g1prime2_VAMCFM);
-      pvbfg1g2_VAJHU -= (pvbf0plus_VAJHU + pvbf0hplus_VAJHU);
-      pvbfg1g2_pi2_VAJHU -= (pvbf0plus_VAJHU + pvbf0hplus_VAJHU);
-      pvbfg1g4_VAJHU -= (pvbf0plus_VAJHU + pvbf0minus_VAJHU);
-      pvbfg1g4_pi2_VAJHU -= (pvbf0plus_VAJHU + pvbf0minus_VAJHU);
-      pvbfg1g1prime2_VAJHU -= (pvbf0plus_VAJHU + pvbf0_g1prime2_VAJHU);
-      pvbfg1g1prime2_pi2_VAJHU -= (pvbf0plus_VAJHU + pvbf0_g1prime2_VAJHU);
-      pvbfg1g2_VAMCFM -= (pvbf0plus_VAMCFM + pvbf0hplus_VAMCFM);
-      pvbfg1g2_pi2_VAMCFM -= (pvbf0plus_VAMCFM + pvbf0hplus_VAMCFM);
-      pvbfg1g4_VAMCFM -= (pvbf0plus_VAMCFM + pvbf0minus_VAMCFM);
-      pvbfg1g4_pi2_VAMCFM -= (pvbf0plus_VAMCFM + pvbf0minus_VAMCFM);
-      pvbfg1g1prime2_VAMCFM -= (pvbf0plus_VAMCFM + pvbf0_g1prime2_VAMCFM);
-      pvbfg1g1prime2_pi2_VAMCFM -= (pvbf0plus_VAMCFM + pvbf0_g1prime2_VAMCFM);
-
-      p0hplus_VAJHU/=p0plus_VAJHU;
-      p0minus_VAJHU/=p0plus_VAJHU;
-      p0_g1prime2_VAJHU/=p0plus_VAJHU;
-      pg1g1prime2_VAJHU/=p0plus_VAJHU;
-      pg1g1prime2_pi2_VAJHU/=p0plus_VAJHU;
-      pg1g2_VAJHU/=p0plus_VAJHU;
-      pg1g2_pi2_VAJHU/=p0plus_VAJHU;
-      pg1g4_VAJHU/=p0plus_VAJHU;
-      pg1g4_pi2_VAJHU/=p0plus_VAJHU;
-      p0hplus_VAMCFM/=p0plus_VAMCFM;
-      p0minus_VAMCFM/=p0plus_VAMCFM;
-      p0_g1prime2_VAMCFM/=p0plus_VAMCFM;
-      pg1g1prime2_VAMCFM/=p0plus_VAMCFM;
-      pg1g1prime2_pi2_VAMCFM/=p0plus_VAMCFM;
-      pg1g2_VAMCFM/=p0plus_VAMCFM;
-      pg1g2_pi2_VAMCFM/=p0plus_VAMCFM;
-      pg1g4_VAMCFM/=p0plus_VAMCFM;
-      pg1g4_pi2_VAMCFM/=p0plus_VAMCFM;
-      pvbf0hplus_VAJHU/=pvbf0plus_VAJHU;
-      pvbf0minus_VAJHU/=pvbf0plus_VAJHU;
-      pvbf0_g1prime2_VAJHU/=pvbf0plus_VAJHU;
-      pvbfg1g1prime2_VAJHU/=pvbf0plus_VAJHU;
-      pvbfg1g1prime2_pi2_VAJHU/=pvbf0plus_VAJHU;
-      pvbfg1g2_VAJHU/=pvbf0plus_VAJHU;
-      pvbfg1g2_pi2_VAJHU/=pvbf0plus_VAJHU;
-      pvbfg1g4_VAJHU/=pvbf0plus_VAJHU;
-      pvbfg1g4_pi2_VAJHU/=pvbf0plus_VAJHU;
-      pvbf0hplus_VAMCFM/=pvbf0plus_VAMCFM;
-      pvbf0minus_VAMCFM/=pvbf0plus_VAMCFM;
-      pvbf0_g1prime2_VAMCFM/=pvbf0plus_VAMCFM;
-      pvbfg1g1prime2_VAMCFM/=pvbf0plus_VAMCFM;
-      pvbfg1g1prime2_pi2_VAMCFM/=pvbf0plus_VAMCFM;
-      pvbfg1g2_VAMCFM/=pvbf0plus_VAMCFM;
-      pvbfg1g2_pi2_VAMCFM/=pvbf0plus_VAMCFM;
-      pvbfg1g4_VAMCFM/=pvbf0plus_VAMCFM;
-      pvbfg1g4_pi2_VAMCFM/=pvbf0plus_VAMCFM;
-
-      for (int xx=0; xx<11; xx++){
-        for (int yy=0; yy<11; yy++){
-          pFullvbf0plus_VAJHU[xx][yy] = (rcd_pvbf0plus_VAJHU.MEsq)[xx][yy];
-          //pFullvbf0hplus_VAJHU[xx][yy] = (rcd_pvbf0hplus_VAJHU.MEsq)[xx][yy];
-          //pFullvbf0minus_VAJHU[xx][yy] = (rcd_pvbf0minus_VAJHU.MEsq)[xx][yy];
-          pFullvbf0_g1prime2_VAJHU[xx][yy] = (rcd_pvbf0_g1prime2_VAJHU.MEsq)[xx][yy];
-          /*pFullvbfg1g2_VAJHU[xx][yy] = (rcd_pvbfg1g2_VAJHU.MEsq)[xx][yy];
-          pFullvbfg1g2_pi2_VAJHU[xx][yy] = (rcd_pvbfg1g2_pi2_VAJHU.MEsq)[xx][yy];
-          pFullvbfg1g4_VAJHU[xx][yy] = (rcd_pvbfg1g4_VAJHU.MEsq)[xx][yy];
-          pFullvbfg1g4_pi2_VAJHU[xx][yy] = (rcd_pvbfg1g4_pi2_VAJHU.MEsq)[xx][yy];
-          */pFullvbfg1g1prime2_VAJHU[xx][yy] = (rcd_pvbfg1g1prime2_VAJHU.MEsq)[xx][yy];
-          pFullvbfg1g1prime2_pi2_VAJHU[xx][yy] = (rcd_pvbfg1g1prime2_pi2_VAJHU.MEsq)[xx][yy];
-          //pFullvbf0plus_VAMCFM[xx][yy] = (rcd_pvbf0plus_VAMCFM.MEsq)[xx][yy];
-          //pFullvbf0hplus_VAMCFM[xx][yy] = (rcd_pvbf0hplus_VAMCFM.MEsq)[xx][yy];
-          //pFullvbf0minus_VAMCFM[xx][yy] = (rcd_pvbf0minus_VAMCFM.MEsq)[xx][yy];
-          pFullvbf0_g1prime2_VAMCFM[xx][yy] = (rcd_pvbf0_g1prime2_VAMCFM.MEsq)[xx][yy];
-          /*pFullvbfg1g2_VAMCFM[xx][yy] = (rcd_pvbfg1g2_VAMCFM.MEsq)[xx][yy];
-          pFullvbfg1g2_pi2_VAMCFM[xx][yy] = (rcd_pvbfg1g2_pi2_VAMCFM.MEsq)[xx][yy];
-          pFullvbfg1g4_VAMCFM[xx][yy] = (rcd_pvbfg1g4_VAMCFM.MEsq)[xx][yy];
-          pFullvbfg1g4_pi2_VAMCFM[xx][yy] = (rcd_pvbfg1g4_pi2_VAMCFM.MEsq)[xx][yy];
-          */pFullvbfg1g1prime2_VAMCFM[xx][yy] = (rcd_pvbfg1g1prime2_VAMCFM.MEsq)[xx][yy];
-          pFullvbfg1g1prime2_pi2_VAMCFM[xx][yy] = (rcd_pvbfg1g1prime2_pi2_VAMCFM.MEsq)[xx][yy];
-
-          /*pFullvbfg1g2_VAJHU[xx][yy] -= (pFullvbf0plus_VAJHU[xx][yy] + pFullvbf0hplus_VAJHU[xx][yy]);
-          pFullvbfg1g2_pi2_VAJHU[xx][yy] -= (pFullvbf0plus_VAJHU[xx][yy] + pFullvbf0hplus_VAJHU[xx][yy]);
-          pFullvbfg1g4_VAJHU[xx][yy] -= (pFullvbf0plus_VAJHU[xx][yy] + pFullvbf0minus_VAJHU[xx][yy]);
-          pFullvbfg1g4_pi2_VAJHU[xx][yy] -= (pFullvbf0plus_VAJHU[xx][yy] + pFullvbf0minus_VAJHU[xx][yy]);
-          */pFullvbfg1g1prime2_VAJHU[xx][yy] -= (pFullvbf0plus_VAJHU[xx][yy] + pFullvbf0_g1prime2_VAJHU[xx][yy]);
-          pFullvbfg1g1prime2_pi2_VAJHU[xx][yy] -= (pFullvbf0plus_VAJHU[xx][yy] + pFullvbf0_g1prime2_VAJHU[xx][yy]);
-          /*pFullvbfg1g2_VAMCFM[xx][yy] -= (pFullvbf0plus_VAMCFM[xx][yy] + pFullvbf0hplus_VAMCFM[xx][yy]);
-          pFullvbfg1g2_pi2_VAMCFM[xx][yy] -= (pFullvbf0plus_VAMCFM[xx][yy] + pFullvbf0hplus_VAMCFM[xx][yy]);
-          pFullvbfg1g4_VAMCFM[xx][yy] -= (pFullvbf0plus_VAMCFM[xx][yy] + pFullvbf0minus_VAMCFM[xx][yy]);
-          pFullvbfg1g4_pi2_VAMCFM[xx][yy] -= (pFullvbf0plus_VAMCFM[xx][yy] + pFullvbf0minus_VAMCFM[xx][yy]);
-          */pFullvbfg1g1prime2_VAMCFM[xx][yy] -= (pFullvbf0plus_VAMCFM[xx][yy] + pFullvbf0_g1prime2_VAMCFM[xx][yy]);
-          pFullvbfg1g1prime2_pi2_VAMCFM[xx][yy] -= (pFullvbf0plus_VAMCFM[xx][yy] + pFullvbf0_g1prime2_VAMCFM[xx][yy]);
-
-          //pFullvbf0hplus_VAJHU[xx][yy]/=pFullvbf0plus_VAJHU[xx][yy];
-          //pFullvbf0minus_VAJHU[xx][yy]/=pFullvbf0plus_VAJHU[xx][yy];
-          pFullvbf0_g1prime2_VAJHU[xx][yy]/=pFullvbf0plus_VAJHU[xx][yy];
-          pFullvbfg1g1prime2_VAJHU[xx][yy]/=pFullvbf0plus_VAJHU[xx][yy];
-          pFullvbfg1g1prime2_pi2_VAJHU[xx][yy]/=pFullvbf0plus_VAJHU[xx][yy];
-          /*pFullvbfg1g2_VAJHU[xx][yy]/=pFullvbf0plus_VAJHU[xx][yy];
-          pFullvbfg1g2_pi2_VAJHU[xx][yy]/=pFullvbf0plus_VAJHU[xx][yy];
-          pFullvbfg1g4_VAJHU[xx][yy]/=pFullvbf0plus_VAJHU[xx][yy];
-          pFullvbfg1g4_pi2_VAJHU[xx][yy]/=pFullvbf0plus_VAJHU[xx][yy];
-          pFullvbf0hplus_VAMCFM[xx][yy]/=pFullvbf0plus_VAMCFM[xx][yy];
-          pFullvbf0minus_VAMCFM[xx][yy]/=pFullvbf0plus_VAMCFM[xx][yy];
-          */pFullvbf0_g1prime2_VAMCFM[xx][yy]/=pFullvbf0plus_VAMCFM[xx][yy];
-          pFullvbfg1g1prime2_VAMCFM[xx][yy]/=pFullvbf0plus_VAMCFM[xx][yy];
-          pFullvbfg1g1prime2_pi2_VAMCFM[xx][yy]/=pFullvbf0plus_VAMCFM[xx][yy];
-          /*pFullvbfg1g2_VAMCFM[xx][yy]/=pFullvbf0plus_VAMCFM[xx][yy];
-          pFullvbfg1g2_pi2_VAMCFM[xx][yy]/=pFullvbf0plus_VAMCFM[xx][yy];
-          pFullvbfg1g4_VAMCFM[xx][yy]/=pFullvbf0plus_VAMCFM[xx][yy];
-          pFullvbfg1g4_pi2_VAMCFM[xx][yy]/=pFullvbf0plus_VAMCFM[xx][yy];
-        */}
-      }
-
-      newtree->Fill();
-      recorded++;
-      //if (recorded==1) break;
-    }
-  }
-
-
-  foutput->WriteTObject(newtree);
-  delete newtree;
-  foutput->Close();
-  finput->Close();
+void testDecayModes(){
+  int first=1, second=3;
+  __modmisc_MOD_getdecaymodes(&first, &second);
+  cout << first << '\t' << second << endl;
+  first=1; second=3;
+  __modmisc_MOD_setdecaymodes(&first, &second);
+  __modmisc_MOD_getdecaymodes(&first, &second);
+  cout << first << '\t' << second << endl;
 }
 
+//
+//void testME_FullMELA_BSMMCFMVBF(float multiplierWW=1, int flavor=0){
+//  int erg_tev=8;
+//  float mPOLE=125.6;
+//  float wPOLE=4.15e-3;
+//  char TREE_NAME[] = "SelectedTree";
+//
+//  Mela mela(erg_tev, mPOLE);
+//
+//  //TString cinput_main = "/scratch0/hep/ianderso/CJLST/140519/PRODFSR_8TeV";
+//  //TFile* finput = new TFile(Form("%s/%s/HZZ4lTree_ZZTo%s.root", cinput_main.Data(), (flavor==0 ? "2mu2e" : "4e"), (flavor==0 ? "2e2mu" : "4e")), "read");
+//  TString cinput_main = "/scratch0/hep/usarical/VBF-JHUGen-13TeV/LHC_13TeV_VBFHZZ4l/0-";
+//  TFile* finput = new TFile(Form("%s/VBFH125toZZ4l_13TeV.root", cinput_main.Data()), "read");
+//  TFile* foutput = new TFile(Form("HZZ4lTree_ZZTo%s_vbfMCFMJHUGenTest.root", (flavor==0 ? "2e2mu" : "4e")), "recreate");
+//
+//  TLorentzVector nullFourVector(0, 0, 0, 0);
+//
+//  float pvbf0plus_VAMCFM;
+//  float pvbf0hplus_VAMCFM;
+//  float pvbf0minus_VAMCFM;
+//  float pvbf0_g1prime2_VAMCFM;
+//  float pvbfg1g1prime2_VAMCFM;
+//  float pvbfg1g1prime2_pi2_VAMCFM;
+//  float pvbfg1g2_VAMCFM;
+//  float pvbfg1g2_pi2_VAMCFM;
+//  float pvbfg1g4_VAMCFM;
+//  float pvbfg1g4_pi2_VAMCFM;
+//
+//  float pFullvbf0plus_VAMCFM[11][11]={ { 0 } };
+//  float pFullvbf0hplus_VAMCFM[11][11]={ { 0 } };
+//  float pFullvbf0minus_VAMCFM[11][11]={ { 0 } };
+//  float pFullvbf0_g1prime2_VAMCFM[11][11]={ { 0 } };
+//  float pFullvbfg1g1prime2_VAMCFM[11][11]={ { 0 } };
+//  float pFullvbfg1g1prime2_pi2_VAMCFM[11][11]={ { 0 } };
+//  float pFullvbfg1g2_VAMCFM[11][11]={ { 0 } };
+//  float pFullvbfg1g2_pi2_VAMCFM[11][11]={ { 0 } };
+//  float pFullvbfg1g4_VAMCFM[11][11]={ { 0 } };
+//  float pFullvbfg1g4_pi2_VAMCFM[11][11]={ { 0 } };
+//
+//  float p0plus_VAMCFM;
+//  float p0hplus_VAMCFM;
+//  float p0minus_VAMCFM;
+//  float p0_g1prime2_VAMCFM;
+//  float pg1g1prime2_VAMCFM;
+//  float pg1g1prime2_pi2_VAMCFM;
+//  float pg1g2_VAMCFM;
+//  float pg1g2_pi2_VAMCFM;
+//  float pg1g4_VAMCFM;
+//  float pg1g4_pi2_VAMCFM;
+//
+//  float pvbf0plus_VAJHU;
+//  float pvbf0hplus_VAJHU;
+//  float pvbf0minus_VAJHU;
+//  float pvbf0_g1prime2_VAJHU;
+//  float pvbfg1g1prime2_VAJHU;
+//  float pvbfg1g1prime2_pi2_VAJHU;
+//  float pvbfg1g2_VAJHU;
+//  float pvbfg1g2_pi2_VAJHU;
+//  float pvbfg1g4_VAJHU;
+//  float pvbfg1g4_pi2_VAJHU;
+//
+//  float pFullvbf0plus_VAJHU[11][11]={ { 0 } };
+//  float pFullvbf0hplus_VAJHU[11][11]={ { 0 } };
+//  float pFullvbf0minus_VAJHU[11][11]={ { 0 } };
+//  float pFullvbf0_g1prime2_VAJHU[11][11]={ { 0 } };
+//  float pFullvbfg1g1prime2_VAJHU[11][11]={ { 0 } };
+//  float pFullvbfg1g1prime2_pi2_VAJHU[11][11]={ { 0 } };
+//  float pFullvbfg1g2_VAJHU[11][11]={ { 0 } };
+//  float pFullvbfg1g2_pi2_VAJHU[11][11]={ { 0 } };
+//  float pFullvbfg1g4_VAJHU[11][11]={ { 0 } };
+//  float pFullvbfg1g4_pi2_VAJHU[11][11]={ { 0 } };
+//
+//  float p0plus_VAJHU;
+//  float p0hplus_VAJHU;
+//  float p0minus_VAJHU;
+//  float p0_g1prime2_VAJHU;
+//  float pg1g1prime2_VAJHU;
+//  float pg1g1prime2_pi2_VAJHU;
+//  float pg1g2_VAJHU;
+//  float pg1g2_pi2_VAJHU;
+//  float pg1g4_VAJHU;
+//  float pg1g4_pi2_VAJHU;
+//
+//
+//  float jet1Pt, jet2Pt;
+//  float jet1px, jet1py, jet1pz, jet1E;
+//  float jet2px, jet2py, jet2pz, jet2E;
+//  float ZZPx, ZZPy, ZZPz, ZZE, dR;
+//  short NJets30;
+//  std::vector<double> * JetPt=0;
+//  std::vector<double> * JetEta=0;
+//  std::vector<double> * JetPhi=0;
+//  std::vector<double> * JetMass=0;
+//  std::vector<int> * JetId=0;
+//  TBranch* bJetPt=0;
+//  TBranch* bJetEta=0;
+//  TBranch* bJetPhi=0;
+//  TBranch* bJetMass=0;
+//  TBranch* bJetId=0;
+//
+//  float mzz = 126.;
+//  float m1 = 91.471450;
+//  float m2 = 12.139782;
+//  float h1 = 0.2682896;
+//  float h2 = 0.1679779;
+//  float phi = 1.5969792;
+//  float hs = -0.727181;
+//  float phi1 = 1.8828257;
+//  int GenLep1Id, GenLep2Id, GenLep3Id, GenLep4Id;
+//  float GenLep1Pt, GenLep2Pt, GenLep3Pt, GenLep4Pt;
+//  float GenLep1Eta, GenLep2Eta, GenLep3Eta, GenLep4Eta;
+//  float GenLep1Phi, GenLep2Phi, GenLep3Phi, GenLep4Phi;
+//  float GenLep1Mass, GenLep2Mass, GenLep3Mass, GenLep4Mass;
+//  float ZZPt, ZZPhi, ZZEta, DijetMass;
+//
+//  TTree* tree = (TTree*)finput->Get(TREE_NAME);
+//  tree->SetBranchAddress("GenDijetMass", &DijetMass);
+//  tree->SetBranchAddress("GenAssociatedParticleId", &JetId, &bJetId);
+//  tree->SetBranchAddress("GenAssociatedParticlePt", &JetPt, &bJetPt);
+//  tree->SetBranchAddress("GenAssociatedParticleEta", &JetEta, &bJetEta);
+//  tree->SetBranchAddress("GenAssociatedParticlePhi", &JetPhi, &bJetPhi);
+//  tree->SetBranchAddress("GenAssociatedParticleMass", &JetMass, &bJetMass);
+//  tree->SetBranchAddress("GenLep1Id", &GenLep1Id);
+//  tree->SetBranchAddress("GenLep1Mass", &GenLep1Mass);
+//  tree->SetBranchAddress("GenLep1Pt", &GenLep1Pt);
+//  tree->SetBranchAddress("GenLep1Eta", &GenLep1Eta);
+//  tree->SetBranchAddress("GenLep1Phi", &GenLep1Phi);
+//  tree->SetBranchAddress("GenLep2Id", &GenLep2Id);
+//  tree->SetBranchAddress("GenLep2Mass", &GenLep2Mass);
+//  tree->SetBranchAddress("GenLep2Pt", &GenLep2Pt);
+//  tree->SetBranchAddress("GenLep2Eta", &GenLep2Eta);
+//  tree->SetBranchAddress("GenLep2Phi", &GenLep2Phi);
+//  tree->SetBranchAddress("GenLep3Id", &GenLep3Id);
+//  tree->SetBranchAddress("GenLep3Mass", &GenLep3Mass);
+//  tree->SetBranchAddress("GenLep3Pt", &GenLep3Pt);
+//  tree->SetBranchAddress("GenLep3Eta", &GenLep3Eta);
+//  tree->SetBranchAddress("GenLep3Phi", &GenLep3Phi);
+//  tree->SetBranchAddress("GenLep4Id", &GenLep4Id);
+//  tree->SetBranchAddress("GenLep4Mass", &GenLep4Mass);
+//  tree->SetBranchAddress("GenLep4Pt", &GenLep4Pt);
+//  tree->SetBranchAddress("GenLep4Eta", &GenLep4Eta);
+//  tree->SetBranchAddress("GenLep4Phi", &GenLep4Phi);
+//  tree->SetBranchAddress("GenHMass", &mzz);
+//  tree->SetBranchAddress("GenZ1Mass", &m1);
+//  tree->SetBranchAddress("GenZ2Mass", &m2);
+//  tree->SetBranchAddress("GenhelcosthetaZ1", &h1);
+//  tree->SetBranchAddress("GenhelcosthetaZ2", &h2);
+//  tree->SetBranchAddress("Genhelphi", &phi);
+//  tree->SetBranchAddress("Gencosthetastar", &hs);
+//  tree->SetBranchAddress("GenphistarZ1", &phi1);
+//
+//  TTree* newtree = new TTree("TestTree", "");
+//  newtree->Branch("p0plus_VAJHU", &p0plus_VAJHU);
+//  newtree->Branch("p0hplus_VAJHU", &p0hplus_VAJHU);
+//  newtree->Branch("p0minus_VAJHU", &p0minus_VAJHU);
+//  newtree->Branch("p0_g1prime2_VAJHU", &p0_g1prime2_VAJHU);
+//  newtree->Branch("pg1g1prime2_VAJHU", &pg1g1prime2_VAJHU);
+//  newtree->Branch("pg1g1prime2_pi2_VAJHU", &pg1g1prime2_pi2_VAJHU);
+//  newtree->Branch("pg1g2_VAJHU", &pg1g2_VAJHU);
+//  newtree->Branch("pg1g2_pi2_VAJHU", &pg1g2_pi2_VAJHU);
+//  newtree->Branch("pg1g4_VAJHU", &pg1g4_VAJHU);
+//  newtree->Branch("pg1g4_pi2_VAJHU", &pg1g4_pi2_VAJHU);
+//  newtree->Branch("p0plus_VAMCFM", &p0plus_VAMCFM);
+//  newtree->Branch("p0hplus_VAMCFM", &p0hplus_VAMCFM);
+//  newtree->Branch("p0minus_VAMCFM", &p0minus_VAMCFM);
+//  newtree->Branch("p0_g1prime2_VAMCFM", &p0_g1prime2_VAMCFM);
+//  newtree->Branch("pg1g1prime2_VAMCFM", &pg1g1prime2_VAMCFM);
+//  newtree->Branch("pg1g1prime2_pi2_VAMCFM", &pg1g1prime2_pi2_VAMCFM);
+//  newtree->Branch("pg1g2_VAMCFM", &pg1g2_VAMCFM);
+//  newtree->Branch("pg1g2_pi2_VAMCFM", &pg1g2_pi2_VAMCFM);
+//  newtree->Branch("pg1g4_VAMCFM", &pg1g4_VAMCFM);
+//  newtree->Branch("pg1g4_pi2_VAMCFM", &pg1g4_pi2_VAMCFM);
+//  newtree->Branch("pvbf0plus_VAJHU", &pvbf0plus_VAJHU);
+//  newtree->Branch("pvbf0hplus_VAJHU", &pvbf0hplus_VAJHU);
+//  newtree->Branch("pvbf0minus_VAJHU", &pvbf0minus_VAJHU);
+//  newtree->Branch("pvbf0_g1prime2_VAJHU", &pvbf0_g1prime2_VAJHU);
+//  newtree->Branch("pvbfg1g1prime2_VAJHU", &pvbfg1g1prime2_VAJHU);
+//  newtree->Branch("pvbfg1g1prime2_pi2_VAJHU", &pvbfg1g1prime2_pi2_VAJHU);
+//  newtree->Branch("pvbfg1g2_VAJHU", &pvbfg1g2_VAJHU);
+//  newtree->Branch("pvbfg1g2_pi2_VAJHU", &pvbfg1g2_pi2_VAJHU);
+//  newtree->Branch("pvbfg1g4_VAJHU", &pvbfg1g4_VAJHU);
+//  newtree->Branch("pvbfg1g4_pi2_VAJHU", &pvbfg1g4_pi2_VAJHU);
+//  newtree->Branch("pvbf0plus_VAMCFM", &pvbf0plus_VAMCFM);
+//  newtree->Branch("pvbf0hplus_VAMCFM", &pvbf0hplus_VAMCFM);
+//  newtree->Branch("pvbf0minus_VAMCFM", &pvbf0minus_VAMCFM);
+//  newtree->Branch("pvbf0_g1prime2_VAMCFM", &pvbf0_g1prime2_VAMCFM);
+//  newtree->Branch("pvbfg1g1prime2_VAMCFM", &pvbfg1g1prime2_VAMCFM);
+//  newtree->Branch("pvbfg1g1prime2_pi2_VAMCFM", &pvbfg1g1prime2_pi2_VAMCFM);
+//  newtree->Branch("pvbfg1g2_VAMCFM", &pvbfg1g2_VAMCFM);
+//  newtree->Branch("pvbfg1g2_pi2_VAMCFM", &pvbfg1g2_pi2_VAMCFM);
+//  newtree->Branch("pvbfg1g4_VAMCFM", &pvbfg1g4_VAMCFM);
+//  newtree->Branch("pvbfg1g4_pi2_VAMCFM", &pvbfg1g4_pi2_VAMCFM);
+//
+//  newtree->Branch("pFullvbf0plus_VAJHU", pFullvbf0plus_VAJHU,"pFullvbf0plus_VAJHU[11][11]/F");
+//  newtree->Branch("pFullvbf0hplus_VAJHU", pFullvbf0hplus_VAJHU, "pFullvbf0hplus_VAJHU[11][11]/F");
+//  newtree->Branch("pFullvbf0minus_VAJHU", pFullvbf0minus_VAJHU, "pFullvbf0minus_VAJHU[11][11]/F");
+//  newtree->Branch("pFullvbf0_g1prime2_VAJHU", pFullvbf0_g1prime2_VAJHU, "pFullvbf0_g1prime2_VAJHU[11][11]/F");
+//  newtree->Branch("pFullvbfg1g1prime2_VAJHU", pFullvbfg1g1prime2_VAJHU, "pFullvbfg1g1prime2_VAJHU[11][11]/F");
+//  newtree->Branch("pFullvbfg1g1prime2_pi2_VAJHU", pFullvbfg1g1prime2_pi2_VAJHU, "pFullvbfg1g1prime2_pi2_VAJHU[11][11]/F");
+//  newtree->Branch("pFullvbfg1g2_VAJHU", pFullvbfg1g2_VAJHU, "pFullvbfg1g2_VAJHU[11][11]/F");
+//  newtree->Branch("pFullvbfg1g2_pi2_VAJHU", pFullvbfg1g2_pi2_VAJHU, "pFullvbfg1g2_pi2_VAJHU[11][11]/F");
+//  newtree->Branch("pFullvbfg1g4_VAJHU", pFullvbfg1g4_VAJHU, "pFullvbfg1g4_VAJHU[11][11]/F");
+//  newtree->Branch("pFullvbfg1g4_pi2_VAJHU", pFullvbfg1g4_pi2_VAJHU, "pFullvbfg1g4_pi2_VAJHU[11][11]/F");
+//  newtree->Branch("pFullvbf0plus_VAMCFM", pFullvbf0plus_VAMCFM, "pFullvbf0plus_VAMCFM[11][11]/F");
+//  newtree->Branch("pFullvbf0hplus_VAMCFM", pFullvbf0hplus_VAMCFM, "pFullvbf0hplus_VAMCFM[11][11]/F");
+//  newtree->Branch("pFullvbf0minus_VAMCFM", pFullvbf0minus_VAMCFM, "pFullvbf0minus_VAMCFM[11][11]/F");
+//  newtree->Branch("pFullvbf0_g1prime2_VAMCFM", pFullvbf0_g1prime2_VAMCFM, "pFullvbf0_g1prime2_VAMCFM[11][11]/F");
+//  newtree->Branch("pFullvbfg1g1prime2_VAMCFM", pFullvbfg1g1prime2_VAMCFM, "pFullvbfg1g1prime2_VAMCFM[11][11]/F");
+//  newtree->Branch("pFullvbfg1g1prime2_pi2_VAMCFM", pFullvbfg1g1prime2_pi2_VAMCFM, "pFullvbfg1g1prime2_pi2_VAMCFM[11][11]/F");
+//  newtree->Branch("pFullvbfg1g2_VAMCFM", pFullvbfg1g2_VAMCFM, "pFullvbfg1g2_VAMCFM[11][11]/F");
+//  newtree->Branch("pFullvbfg1g2_pi2_VAMCFM", pFullvbfg1g2_pi2_VAMCFM, "pFullvbfg1g2_pi2_VAMCFM[11][11]/F");
+//  newtree->Branch("pFullvbfg1g4_VAMCFM", pFullvbfg1g4_VAMCFM, "pFullvbfg1g4_VAMCFM[11][11]/F");
+//  newtree->Branch("pFullvbfg1g4_pi2_VAMCFM", pFullvbfg1g4_pi2_VAMCFM, "pFullvbfg1g4_pi2_VAMCFM[11][11]/F");
+//
+//  newtree->Branch("ZZMass", &mzz);
+//  newtree->Branch("DijetMass", &DijetMass);
+//
+//  int nEntries = tree->GetEntries();
+//  double selfDHggcoupl[SIZE_HGG][2] ={ { 0 } };
+//  double selfDHvvcoupl[SIZE_HVV_VBF][2] ={ { 0 } };
+//  double selfDHwwcoupl[SIZE_HWW_VBF][2] ={ { 0 } };
+//  double selfDTotalHvvcoupl[SIZE_HVV][2] ={ { 0 } };
+//  double selfDTotalHwwcoupl[SIZE_HVV][2] ={ { 0 } };
+//  double ggvvcoupl[2]={ 0, 0 };
+//  mela.setProcess(TVar::SelfDefine_spin0, TVar::JHUGen, TVar::ZZGG);
+//  int recorded=0;
+//  for (int ev = 0; ev < nEntries; ev++){
+//    if (recorded>=1000) break;
+//    tree->GetEntry(ev);
+//    
+//    /*
+//    if (flavor == 1){
+//      GenLep1Id=11;
+//      GenLep2Id=-11;
+//      GenLep3Id=11;
+//      GenLep4Id=-11;
+//    }
+//    else{
+//      GenLep1Id=13;
+//      GenLep2Id=-13;
+//      GenLep3Id=11;
+//      GenLep4Id=-11;
+//    }
+//    TLorentzVector jet1(0, 0, 1e-3, 1e-3), jet2(0, 0, 1e-3, 1e-3), higgs(0, 0, 0, 0);
+//    higgs.SetPtEtaPhiM(ZZPt, ZZEta, ZZPhi, mzz);
+//
+//    int lepIdOrdered[4]={ GenLep1Id, GenLep2Id, GenLep3Id, GenLep4Id };
+//    float angularOrdered[8] ={ mzz, m1, m2, hs, h1, h2, phi, phi1 };
+//    std::vector<TLorentzVector> pZZ4L = mela.calculate4Momentum((double)mzz, (double)m1, (double)m2, (double)acos(hs), (double)acos(h1), (double)acos(h2), (double)phi1, (double)phi);
+//    TLorentzVector higgsCM = pZZ4L[0] + pZZ4L[1] + pZZ4L[2] + pZZ4L[3]; // ...because...
+//    TLorentzVector higgsCM_boosted = higgsCM;
+//    higgsCM_boosted.Boost(-higgsCM.BoostVector());
+//    higgsCM_boosted.Boost(higgs.BoostVector());
+//    for (int k=0; k<4; k++){
+//      pZZ4L[k].Boost(-higgsCM.BoostVector());
+//      pZZ4L[k].Boost(higgsCM_boosted.BoostVector());
+//    }
+//    TLorentzVector pZZ4LOrdered[4] ={ pZZ4L[0], pZZ4L[1], pZZ4L[2], pZZ4L[3] };
+//    higgs.SetXYZT(higgsCM_boosted.X(), higgsCM_boosted.Y(), higgsCM_boosted.Z(), higgsCM_boosted.T());
+//    */
+//
+//    if (flavor==1 && GenLep1Id!=GenLep3Id) continue;
+//    else if (GenLep1Id==GenLep3Id) continue;
+//
+//    int lepIdOrdered[4]={ GenLep1Id, GenLep2Id, GenLep3Id, GenLep4Id };
+//    float angularOrdered[8] ={ mzz, m1, m2, hs, h1, h2, phi, phi1 };
+//
+//    TLorentzVector pZZ4LOrdered[4];
+//    TLorentzVector pZZ4LOrdered_CM[4];
+//    pZZ4LOrdered[0].SetPtEtaPhiM(GenLep1Pt, GenLep1Eta, GenLep1Phi, GenLep1Mass);
+//    pZZ4LOrdered[1].SetPtEtaPhiM(GenLep2Pt, GenLep2Eta, GenLep2Phi, GenLep2Mass);
+//    pZZ4LOrdered[2].SetPtEtaPhiM(GenLep3Pt, GenLep3Eta, GenLep3Phi, GenLep3Mass);
+//    pZZ4LOrdered[3].SetPtEtaPhiM(GenLep4Pt, GenLep4Eta, GenLep4Phi, GenLep4Mass);
+//
+//    TLorentzVector jet1(0, 0, 0, 0), jet2(0, 0, 0, 0), higgs(0, 0, 0, 0);
+//    for (int i=0; i<4; i++) higgs = higgs + pZZ4LOrdered[i];
+//
+//    pZZ4LOrdered_CM[0].SetPtEtaPhiM(GenLep1Pt, GenLep1Eta, GenLep1Phi, GenLep1Mass);
+//    pZZ4LOrdered_CM[1].SetPtEtaPhiM(GenLep2Pt, GenLep2Eta, GenLep2Phi, GenLep2Mass);
+//    pZZ4LOrdered_CM[2].SetPtEtaPhiM(GenLep3Pt, GenLep3Eta, GenLep3Phi, GenLep3Mass);
+//    pZZ4LOrdered_CM[3].SetPtEtaPhiM(GenLep4Pt, GenLep4Eta, GenLep4Phi, GenLep4Mass);
+//    for (int i=0; i<4; i++) pZZ4LOrdered_CM[i].Boost(-higgs.BoostVector());
+//    for (int i=0; i<4; i++) {
+//      //cout << "pZZ4LOrdered[" << i << "]:\t" << pZZ4LOrdered[i].X() << '\t' << pZZ4LOrdered[i].Y() << '\t' << pZZ4LOrdered[i].Z() << '\t' << pZZ4LOrdered[i].T() << '\t' << pZZ4LOrdered[i].M() << '\n';
+//    }
+//    for (int i=0; i<4; i++) {
+//      //cout << "pZZ4LOrdered_CM[" << i << "]:\t" << pZZ4LOrdered_CM[i].X() << '\t' << pZZ4LOrdered_CM[i].Y() << '\t' << pZZ4LOrdered_CM[i].Z() << '\t' << pZZ4LOrdered_CM[i].T() << '\t' << pZZ4LOrdered_CM[i].M() << '\n';
+//    }
+//
+//    //if (JetPt->size()>=2 && NJets30>=2 && DijetMass>150){
+//    if (DijetMass>150){
+//      //cout << higgs.M() << '\t' << (pZZ4LOrdered[0]+pZZ4LOrdered[1]+pZZ4LOrdered[2]+pZZ4LOrdered[3]).M() << endl;
+//
+//      jet1.SetPtEtaPhiM(JetPt->at(0), JetEta->at(0), JetPhi->at(0), JetMass->at(0));
+//      jet2.SetPtEtaPhiM(JetPt->at(1), JetEta->at(1), JetPhi->at(1), JetMass->at(1));
+//      TLorentzVector myjets[2]={ jet1, jet2 };
+//      //int myjetids[2]={ 0 };
+//      int myjetids[2]={ JetId->at(0), JetId->at(1) };
+//
+//      for (int i=0; i<2; i++) {
+//        //cout << "myjets[" << i << "]:\t" << myjets[i].X() << '\t' << myjets[i].Y() << '\t' << myjets[i].Z() << '\t' << myjets[i].T() << '\t' << myjets[i].M() << '\n';
+//      }
+//
+//      mela.setProcess(TVar::SelfDefine_spin0, TVar::JHUGen, TVar::ZZGG);
+//
+//      for (int ii = 0; ii < SIZE_HVV; ii++){ for (int jj = 0; jj < 2; jj++) selfDTotalHvvcoupl[ii][jj] = 0; }
+//      selfDTotalHvvcoupl[0][0]=1;
+//      mela.setMelaHiggsWidth(wPOLE);
+//      p0plus_VAJHU = getJHUGenMELAWeight(mela, lepIdOrdered, angularOrdered, selfDTotalHvvcoupl);
+///*
+//      if (recorded==0){
+//        mela.setProcess(TVar::HSMHiggs, TVar::JHUGen, TVar::ZZGG);
+//        mela.setMelaHiggsWidth(wPOLE);
+//        float tmpProb=0;
+//        mela.computeP(
+//          pZZ4LOrdered_CM[0], lepIdOrdered[0],
+//          pZZ4LOrdered_CM[1], lepIdOrdered[1],
+//          pZZ4LOrdered_CM[2], lepIdOrdered[2],
+//          pZZ4LOrdered_CM[3], lepIdOrdered[3],
+//          tmpProb
+//          );
+//        cout << higgs.Z() << '\t' << p0plus_VAJHU << '\t' << tmpProb << '\t' << p0plus_VAJHU/tmpProb << endl;
+//        mela.setProcess(TVar::SelfDefine_spin0, TVar::JHUGen, TVar::ZZGG);
+//      }
+//*/
+///*
+//      for (int ii = 0; ii < SIZE_HVV; ii++){ for (int jj = 0; jj < 2; jj++) selfDTotalHvvcoupl[ii][jj] = 0; }
+//      selfDTotalHvvcoupl[1][0]=1.638;
+//      mela.setMelaHiggsWidth(wPOLE);
+//      p0hplus_VAJHU = getJHUGenMELAWeight(mela, lepIdOrdered, angularOrdered, selfDTotalHvvcoupl);
+//
+//      for (int ii = 0; ii < SIZE_HVV; ii++){ for (int jj = 0; jj < 2; jj++) selfDTotalHvvcoupl[ii][jj] = 0; }
+//      selfDTotalHvvcoupl[3][0]=2.521;
+//      mela.setMelaHiggsWidth(wPOLE);
+//      p0minus_VAJHU = getJHUGenMELAWeight(mela, lepIdOrdered, angularOrdered, selfDTotalHvvcoupl);
+//*/
+//      for (int ii = 0; ii < SIZE_HVV; ii++){ for (int jj = 0; jj < 2; jj++) selfDTotalHvvcoupl[ii][jj] = 0; }
+//      selfDTotalHvvcoupl[11][0]=-12046.01;
+//      mela.setMelaHiggsWidth(wPOLE);
+//      p0_g1prime2_VAJHU = getJHUGenMELAWeight(mela, lepIdOrdered, angularOrdered, selfDTotalHvvcoupl);
+//
+///*
+//      for (int ii = 0; ii < SIZE_HVV; ii++){ for (int jj = 0; jj < 2; jj++) selfDTotalHvvcoupl[ii][jj] = 0; }
+//      selfDTotalHvvcoupl[0][0]=1;
+//      selfDTotalHvvcoupl[1][0]=1.638;
+//      mela.setMelaHiggsWidth(wPOLE);
+//      pg1g2_VAJHU = getJHUGenMELAWeight(mela, lepIdOrdered, angularOrdered, selfDTotalHvvcoupl);
+//
+//      for (int ii = 0; ii < SIZE_HVV; ii++){ for (int jj = 0; jj < 2; jj++) selfDTotalHvvcoupl[ii][jj] = 0; }
+//      selfDTotalHvvcoupl[0][0]=1;
+//      selfDTotalHvvcoupl[1][1]=1.638;
+//      mela.setMelaHiggsWidth(wPOLE);
+//      pg1g2_pi2_VAJHU = getJHUGenMELAWeight(mela, lepIdOrdered, angularOrdered, selfDTotalHvvcoupl);
+//
+//      for (int ii = 0; ii < SIZE_HVV; ii++){ for (int jj = 0; jj < 2; jj++) selfDTotalHvvcoupl[ii][jj] = 0; }
+//      selfDTotalHvvcoupl[0][0]=1;
+//      selfDTotalHvvcoupl[3][0]=2.521;
+//      mela.setMelaHiggsWidth(wPOLE);
+//      pg1g4_VAJHU = getJHUGenMELAWeight(mela, lepIdOrdered, angularOrdered, selfDTotalHvvcoupl);
+//
+//      for (int ii = 0; ii < SIZE_HVV; ii++){ for (int jj = 0; jj < 2; jj++) selfDTotalHvvcoupl[ii][jj] = 0; }
+//      selfDTotalHvvcoupl[0][0]=1;
+//      selfDTotalHvvcoupl[3][1]=2.521;
+//      mela.setMelaHiggsWidth(wPOLE);
+//      pg1g4_pi2_VAJHU = getJHUGenMELAWeight(mela, lepIdOrdered, angularOrdered, selfDTotalHvvcoupl);
+//*/
+//
+//      for (int ii = 0; ii < SIZE_HVV; ii++){ for (int jj = 0; jj < 2; jj++) selfDTotalHvvcoupl[ii][jj] = 0; }
+//      selfDTotalHvvcoupl[0][0]=1;
+//      selfDTotalHvvcoupl[11][0]=-12046.01;
+//      mela.setMelaHiggsWidth(wPOLE);
+//      pg1g1prime2_VAJHU = getJHUGenMELAWeight(mela, lepIdOrdered, angularOrdered, selfDTotalHvvcoupl);
+//
+//      for (int ii = 0; ii < SIZE_HVV; ii++){ for (int jj = 0; jj < 2; jj++) selfDTotalHvvcoupl[ii][jj] = 0; }
+//      selfDTotalHvvcoupl[0][0]=1;
+//      selfDTotalHvvcoupl[11][1]=-12046.01;
+//      mela.setMelaHiggsWidth(wPOLE);
+//      pg1g1prime2_pi2_VAJHU = getJHUGenMELAWeight(mela, lepIdOrdered, angularOrdered, selfDTotalHvvcoupl);
+//
+//
+//// VBF JHUGen
+//      mela.setProcess(TVar::SelfDefine_spin0, TVar::JHUGen, TVar::JJVBF);
+//
+//      for (int xx = 0; xx < SIZE_HVV_VBF; xx++){ for (int yy = 0; yy < 2; yy++) selfDHvvcoupl[xx][yy] = 0; }
+//      for (int xx = 0; xx < SIZE_HWW_VBF; xx++){ for (int yy = 0; yy < 2; yy++) selfDHwwcoupl[xx][yy] = 0; }
+//      selfDHvvcoupl[0][0]=1;
+//      selfDHwwcoupl[0][0]=1.*multiplierWW;
+//      mela.computeProdP(jet1, 0, jet2, 0, higgs, 25, nullFourVector, 0, selfDHggcoupl, selfDHvvcoupl, selfDHwwcoupl, pvbf0plus_VAJHU);
+//      pvbf0plus_VAJHU *= p0plus_VAJHU;
+//      me_record rcd_pvbf0plus_VAJHU = mela.getFullMERecord();
+//      for (int xx=0; xx<11; xx++){
+//        for (int yy=0; yy<11; yy++){
+//          (rcd_pvbf0plus_VAJHU.MEsq)[xx][yy] *= p0plus_VAJHU;
+//          (rcd_pvbf0plus_VAJHU.weightedMEsq)[xx][yy] *= p0plus_VAJHU;
+//        }
+//      }
+//
+///*
+//      for (int xx = 0; xx < SIZE_HVV_VBF; xx++){ for (int yy = 0; yy < 2; yy++) selfDHvvcoupl[xx][yy] = 0; }
+//      for (int xx = 0; xx < SIZE_HWW_VBF; xx++){ for (int yy = 0; yy < 2; yy++) selfDHwwcoupl[xx][yy] = 0; }
+//      selfDHvvcoupl[1][0]=1.638;
+//      selfDHwwcoupl[1][0]=1.638*multiplierWW;
+//      mela.computeProdP(jet1, 0, jet2, 0, higgs, 25, nullFourVector, 0, selfDHggcoupl, selfDHvvcoupl, selfDHwwcoupl, pvbf0hplus_VAJHU);
+//      pvbf0hplus_VAJHU *= p0hplus_VAJHU;
+//
+//      for (int xx = 0; xx < SIZE_HVV_VBF; xx++){ for (int yy = 0; yy < 2; yy++) selfDHvvcoupl[xx][yy] = 0; }
+//      for (int xx = 0; xx < SIZE_HWW_VBF; xx++){ for (int yy = 0; yy < 2; yy++) selfDHwwcoupl[xx][yy] = 0; }
+//      selfDHvvcoupl[3][0]=2.521;
+//      selfDHwwcoupl[3][0]=2.521*multiplierWW;
+//      mela.computeProdP(jet1, 0, jet2, 0, higgs, 25, nullFourVector, 0, selfDHggcoupl, selfDHvvcoupl, selfDHwwcoupl, pvbf0minus_VAJHU);
+//      pvbf0minus_VAJHU *= p0minus_VAJHU;
+//
+//*/
+//      for (int xx = 0; xx < SIZE_HVV_VBF; xx++){ for (int yy = 0; yy < 2; yy++) selfDHvvcoupl[xx][yy] = 0; }
+//      for (int xx = 0; xx < SIZE_HWW_VBF; xx++){ for (int yy = 0; yy < 2; yy++) selfDHwwcoupl[xx][yy] = 0; }
+//      selfDHvvcoupl[11][0]=-12046.01;
+//      selfDHwwcoupl[11][0]=-12046.01*multiplierWW;
+//      mela.computeProdP(jet1, 0, jet2, 0, higgs, 25, nullFourVector, 0, selfDHggcoupl, selfDHvvcoupl, selfDHwwcoupl, pvbf0_g1prime2_VAJHU);
+//      pvbf0_g1prime2_VAJHU *= p0_g1prime2_VAJHU;
+//      me_record rcd_pvbf0_g1prime2_VAJHU = mela.getFullMERecord();
+//      for (int xx=0; xx<11; xx++){
+//        for (int yy=0; yy<11; yy++){
+//          (rcd_pvbf0_g1prime2_VAJHU.MEsq)[xx][yy] *= p0_g1prime2_VAJHU;
+//          (rcd_pvbf0_g1prime2_VAJHU.weightedMEsq)[xx][yy] *= p0_g1prime2_VAJHU;
+//        }
+//      }
+//
+//
+///*
+//      for (int xx = 0; xx < SIZE_HVV_VBF; xx++){ for (int yy = 0; yy < 2; yy++) selfDHvvcoupl[xx][yy] = 0; }
+//      for (int xx = 0; xx < SIZE_HWW_VBF; xx++){ for (int yy = 0; yy < 2; yy++) selfDHwwcoupl[xx][yy] = 0; }
+//      selfDHvvcoupl[0][0]=1;
+//      selfDHwwcoupl[0][0]=1.*multiplierWW;
+//      selfDHvvcoupl[1][0]=1.638;
+//      selfDHwwcoupl[1][0]=1.638*multiplierWW;
+//      mela.computeProdP(jet1, 0, jet2, 0, higgs, 25, nullFourVector, 0, selfDHggcoupl, selfDHvvcoupl, selfDHwwcoupl, pvbfg1g2_VAJHU);
+//      pvbfg1g2_VAJHU *= pg1g2_VAJHU;
+//
+//      for (int xx = 0; xx < SIZE_HVV_VBF; xx++){ for (int yy = 0; yy < 2; yy++) selfDHvvcoupl[xx][yy] = 0; }
+//      for (int xx = 0; xx < SIZE_HWW_VBF; xx++){ for (int yy = 0; yy < 2; yy++) selfDHwwcoupl[xx][yy] = 0; }
+//      selfDHvvcoupl[0][0]=1;
+//      selfDHwwcoupl[0][0]=1.*multiplierWW;
+//      selfDHvvcoupl[1][1]=1.638;
+//      selfDHwwcoupl[1][1]=1.638*multiplierWW;
+//      mela.computeProdP(jet1, 0, jet2, 0, higgs, 25, nullFourVector, 0, selfDHggcoupl, selfDHvvcoupl, selfDHwwcoupl, pvbfg1g2_pi2_VAJHU);
+//      pvbfg1g2_pi2_VAJHU *= pg1g2_pi2_VAJHU;
+//
+//      for (int xx = 0; xx < SIZE_HVV_VBF; xx++){ for (int yy = 0; yy < 2; yy++) selfDHvvcoupl[xx][yy] = 0; }
+//      for (int xx = 0; xx < SIZE_HWW_VBF; xx++){ for (int yy = 0; yy < 2; yy++) selfDHwwcoupl[xx][yy] = 0; }
+//      selfDHvvcoupl[0][0]=1;
+//      selfDHwwcoupl[0][0]=1.*multiplierWW;
+//      selfDHvvcoupl[3][0]=2.521;
+//      selfDHwwcoupl[3][0]=2.521*multiplierWW;
+//      mela.computeProdP(jet1, 0, jet2, 0, higgs, 25, nullFourVector, 0, selfDHggcoupl, selfDHvvcoupl, selfDHwwcoupl, pvbfg1g4_VAJHU);
+//      pvbfg1g4_VAJHU *= pg1g4_VAJHU;
+//
+//      for (int xx = 0; xx < SIZE_HVV_VBF; xx++){ for (int yy = 0; yy < 2; yy++) selfDHvvcoupl[xx][yy] = 0; }
+//      for (int xx = 0; xx < SIZE_HWW_VBF; xx++){ for (int yy = 0; yy < 2; yy++) selfDHwwcoupl[xx][yy] = 0; }
+//      selfDHvvcoupl[0][0]=1;
+//      selfDHwwcoupl[0][0]=1.*multiplierWW;
+//      selfDHvvcoupl[3][1]=2.521;
+//      selfDHwwcoupl[3][1]=2.521*multiplierWW;
+//      mela.computeProdP(jet1, 0, jet2, 0, higgs, 25, nullFourVector, 0, selfDHggcoupl, selfDHvvcoupl, selfDHwwcoupl, pvbfg1g4_pi2_VAJHU);
+//      pvbfg1g4_pi2_VAJHU *= pg1g4_pi2_VAJHU;
+//
+//*/
+//      for (int xx = 0; xx < SIZE_HVV_VBF; xx++){ for (int yy = 0; yy < 2; yy++) selfDHvvcoupl[xx][yy] = 0; }
+//      for (int xx = 0; xx < SIZE_HWW_VBF; xx++){ for (int yy = 0; yy < 2; yy++) selfDHwwcoupl[xx][yy] = 0; }
+//      selfDHvvcoupl[0][0]=1;
+//      selfDHwwcoupl[0][0]=1.*multiplierWW;
+//      selfDHvvcoupl[11][0]=-12046.01;
+//      selfDHwwcoupl[11][0]=-12046.01*multiplierWW;
+//      mela.computeProdP(jet1, 0, jet2, 0, higgs, 25, nullFourVector, 0, selfDHggcoupl, selfDHvvcoupl, selfDHwwcoupl, pvbfg1g1prime2_VAJHU);
+//      pvbfg1g1prime2_VAJHU *= pg1g1prime2_VAJHU;
+//      me_record rcd_pvbfg1g1prime2_VAJHU = mela.getFullMERecord();
+//      for (int xx=0; xx<11; xx++){
+//        for (int yy=0; yy<11; yy++){
+//          (rcd_pvbfg1g1prime2_VAJHU.MEsq)[xx][yy] *= pg1g1prime2_VAJHU;
+//          (rcd_pvbfg1g1prime2_VAJHU.weightedMEsq)[xx][yy] *= pg1g1prime2_VAJHU;
+//        }
+//      }
+//
+//      for (int xx = 0; xx < SIZE_HVV_VBF; xx++){ for (int yy = 0; yy < 2; yy++) selfDHvvcoupl[xx][yy] = 0; }
+//      for (int xx = 0; xx < SIZE_HWW_VBF; xx++){ for (int yy = 0; yy < 2; yy++) selfDHwwcoupl[xx][yy] = 0; }
+//      selfDHvvcoupl[0][0]=1;
+//      selfDHwwcoupl[0][0]=1.*multiplierWW;
+//      selfDHvvcoupl[11][1]=-12046.01;
+//      selfDHwwcoupl[11][1]=-12046.01*multiplierWW;
+//      mela.computeProdP(jet1, 0, jet2, 0, higgs, 25, nullFourVector, 0, selfDHggcoupl, selfDHvvcoupl, selfDHwwcoupl, pvbfg1g1prime2_pi2_VAJHU);
+//      pvbfg1g1prime2_pi2_VAJHU *= pg1g1prime2_pi2_VAJHU;
+//      me_record rcd_pvbfg1g1prime2_pi2_VAJHU = mela.getFullMERecord();
+//      for (int xx=0; xx<11; xx++){
+//        for (int yy=0; yy<11; yy++){
+//          (rcd_pvbfg1g1prime2_pi2_VAJHU.MEsq)[xx][yy] *= pg1g1prime2_pi2_VAJHU;
+//          (rcd_pvbfg1g1prime2_pi2_VAJHU.weightedMEsq)[xx][yy] *= pg1g1prime2_pi2_VAJHU;
+//        }
+//      }
+//
+//
+//// VBF MCFM
+//      mela.setProcess(TVar::HSMHiggs, TVar::MCFM, TVar::JJVBF);
+//
+//      if (recorded==0) cout << "SM MCFM" << endl;
+//      for (int xx = 0; xx < SIZE_HVV; xx++){ for (int yy = 0; yy < 2; yy++) selfDTotalHvvcoupl[xx][yy] = 0; }
+//      for (int xx = 0; xx < SIZE_HVV; xx++){ for (int yy = 0; yy < 2; yy++) selfDTotalHwwcoupl[xx][yy] = 0; }
+//      selfDTotalHvvcoupl[0][0]=1;
+//      selfDTotalHwwcoupl[0][0]=1.*multiplierWW;
+//      mela.computeProdDecP(myjets, pZZ4LOrdered, myjetids, lepIdOrdered, selfDTotalHvvcoupl, selfDTotalHwwcoupl, pvbf0plus_VAMCFM);
+//      me_record rcd_pvbf0plus_VAMCFM = mela.getFullMERecord();
+//
+///*
+//      if (recorded==0) cout << "0h+ MCFM" << endl;
+//      for (int xx = 0; xx < SIZE_HVV; xx++){ for (int yy = 0; yy < 2; yy++) selfDTotalHvvcoupl[xx][yy] = 0; }
+//      for (int xx = 0; xx < SIZE_HVV; xx++){ for (int yy = 0; yy < 2; yy++) selfDTotalHwwcoupl[xx][yy] = 0; }
+//      selfDTotalHvvcoupl[1][0]=1.638;
+//      selfDTotalHwwcoupl[1][0]=1.638*multiplierWW;
+//      mela.computeProdDecP(myjets, pZZ4LOrdered, myjetids, lepIdOrdered, selfDTotalHvvcoupl, selfDTotalHwwcoupl, pvbf0hplus_VAMCFM);
+//
+//      for (int xx = 0; xx < SIZE_HVV; xx++){ for (int yy = 0; yy < 2; yy++) selfDTotalHvvcoupl[xx][yy] = 0; }
+//      for (int xx = 0; xx < SIZE_HVV; xx++){ for (int yy = 0; yy < 2; yy++) selfDTotalHwwcoupl[xx][yy] = 0; }
+//      selfDTotalHvvcoupl[3][0]=2.521;
+//      selfDTotalHwwcoupl[3][0]=2.521*multiplierWW;
+//      mela.computeProdDecP(myjets, pZZ4LOrdered, myjetids, lepIdOrdered, selfDTotalHvvcoupl, selfDTotalHwwcoupl, pvbf0minus_VAMCFM);
+//*/
+//
+//      for (int xx = 0; xx < SIZE_HVV; xx++){ for (int yy = 0; yy < 2; yy++) selfDTotalHvvcoupl[xx][yy] = 0; }
+//      for (int xx = 0; xx < SIZE_HVV; xx++){ for (int yy = 0; yy < 2; yy++) selfDTotalHwwcoupl[xx][yy] = 0; }
+//      selfDTotalHvvcoupl[11][0]=-12046.01;
+//      selfDTotalHwwcoupl[11][0]=-12046.01*multiplierWW;
+//      mela.computeProdDecP(myjets, pZZ4LOrdered, myjetids, lepIdOrdered, selfDTotalHvvcoupl, selfDTotalHwwcoupl, pvbf0_g1prime2_VAMCFM);
+//      me_record rcd_pvbf0_g1prime2_VAMCFM = mela.getFullMERecord();
+//
+///*
+//      for (int xx = 0; xx < SIZE_HVV; xx++){ for (int yy = 0; yy < 2; yy++) selfDTotalHvvcoupl[xx][yy] = 0; }
+//      for (int xx = 0; xx < SIZE_HVV; xx++){ for (int yy = 0; yy < 2; yy++) selfDTotalHwwcoupl[xx][yy] = 0; }
+//      selfDTotalHvvcoupl[0][0]=1;
+//      selfDTotalHwwcoupl[0][0]=1.*multiplierWW;
+//      selfDTotalHvvcoupl[1][0]=1.638;
+//      selfDTotalHwwcoupl[1][0]=1.638*multiplierWW;
+//      mela.computeProdDecP(myjets, pZZ4LOrdered, myjetids, lepIdOrdered, selfDTotalHvvcoupl, selfDTotalHwwcoupl, pvbfg1g2_VAMCFM);
+//
+//      for (int xx = 0; xx < SIZE_HVV; xx++){ for (int yy = 0; yy < 2; yy++) selfDTotalHvvcoupl[xx][yy] = 0; }
+//      for (int xx = 0; xx < SIZE_HVV; xx++){ for (int yy = 0; yy < 2; yy++) selfDTotalHwwcoupl[xx][yy] = 0; }
+//      selfDTotalHvvcoupl[0][0]=1;
+//      selfDTotalHwwcoupl[0][0]=1.*multiplierWW;
+//      selfDTotalHvvcoupl[1][1]=1.638;
+//      selfDTotalHwwcoupl[1][1]=1.638*multiplierWW;
+//      mela.computeProdDecP(myjets, pZZ4LOrdered, myjetids, lepIdOrdered, selfDTotalHvvcoupl, selfDTotalHwwcoupl, pvbfg1g2_pi2_VAMCFM);
+//
+//      for (int xx = 0; xx < SIZE_HVV; xx++){ for (int yy = 0; yy < 2; yy++) selfDTotalHvvcoupl[xx][yy] = 0; }
+//      for (int xx = 0; xx < SIZE_HVV; xx++){ for (int yy = 0; yy < 2; yy++) selfDTotalHwwcoupl[xx][yy] = 0; }
+//      selfDTotalHvvcoupl[0][0]=1;
+//      selfDTotalHwwcoupl[0][0]=1.*multiplierWW;
+//      selfDTotalHvvcoupl[3][0]=2.521;
+//      selfDTotalHwwcoupl[3][0]=2.521*multiplierWW;
+//      mela.computeProdDecP(myjets, pZZ4LOrdered, myjetids, lepIdOrdered, selfDTotalHvvcoupl, selfDTotalHwwcoupl, pvbfg1g4_VAMCFM);
+//
+//      for (int xx = 0; xx < SIZE_HVV; xx++){ for (int yy = 0; yy < 2; yy++) selfDTotalHvvcoupl[xx][yy] = 0; }
+//      for (int xx = 0; xx < SIZE_HVV; xx++){ for (int yy = 0; yy < 2; yy++) selfDTotalHwwcoupl[xx][yy] = 0; }
+//      selfDTotalHvvcoupl[0][0]=1;
+//      selfDTotalHwwcoupl[0][0]=1.*multiplierWW;
+//      selfDTotalHvvcoupl[3][1]=2.521;
+//      selfDTotalHwwcoupl[3][1]=2.521*multiplierWW;
+//      mela.computeProdDecP(myjets, pZZ4LOrdered, myjetids, lepIdOrdered, selfDTotalHvvcoupl, selfDTotalHwwcoupl, pvbfg1g4_pi2_VAMCFM);
+//
+//*/
+//      for (int xx = 0; xx < SIZE_HVV; xx++){ for (int yy = 0; yy < 2; yy++) selfDTotalHvvcoupl[xx][yy] = 0; }
+//      for (int xx = 0; xx < SIZE_HVV; xx++){ for (int yy = 0; yy < 2; yy++) selfDTotalHwwcoupl[xx][yy] = 0; }
+//      selfDTotalHvvcoupl[0][0]=1;
+//      selfDTotalHwwcoupl[0][0]=1.*multiplierWW;
+//      selfDTotalHvvcoupl[11][0]=-12046.01;
+//      selfDTotalHwwcoupl[11][0]=-12046.01*multiplierWW;
+//      mela.computeProdDecP(myjets, pZZ4LOrdered, myjetids, lepIdOrdered, selfDTotalHvvcoupl, selfDTotalHwwcoupl, pvbfg1g1prime2_VAMCFM);
+//      me_record rcd_pvbfg1g1prime2_VAMCFM = mela.getFullMERecord();
+//
+//      for (int xx = 0; xx < SIZE_HVV; xx++){ for (int yy = 0; yy < 2; yy++) selfDTotalHvvcoupl[xx][yy] = 0; }
+//      for (int xx = 0; xx < SIZE_HVV; xx++){ for (int yy = 0; yy < 2; yy++) selfDTotalHwwcoupl[xx][yy] = 0; }
+//      selfDTotalHvvcoupl[0][0]=1;
+//      selfDTotalHwwcoupl[0][0]=1.*multiplierWW;
+//      selfDTotalHvvcoupl[11][1]=-12046.01;
+//      selfDTotalHwwcoupl[11][1]=-12046.01*multiplierWW;
+//      mela.computeProdDecP(myjets, pZZ4LOrdered, myjetids, lepIdOrdered, selfDTotalHvvcoupl, selfDTotalHwwcoupl, pvbfg1g1prime2_pi2_VAMCFM);
+//      me_record rcd_pvbfg1g1prime2_pi2_VAMCFM = mela.getFullMERecord();
+//
+//
+//      mela.setProcess(TVar::HSMHiggs, TVar::MCFM, TVar::ZZGG);
+//
+//      for (int ii = 0; ii < SIZE_HVV; ii++){ for (int jj = 0; jj < 2; jj++) selfDTotalHvvcoupl[ii][jj] = 0; }
+//      selfDTotalHvvcoupl[0][0]=1;
+//      mela.setMelaHiggsWidth(wPOLE);
+//      p0plus_VAMCFM = getJHUGenMELAWeight(mela, lepIdOrdered, angularOrdered, selfDTotalHvvcoupl);
+//
+///*
+//      for (int ii = 0; ii < SIZE_HVV; ii++){ for (int jj = 0; jj < 2; jj++) selfDTotalHvvcoupl[ii][jj] = 0; }
+//      selfDTotalHvvcoupl[1][0]=1.638;
+//      mela.setMelaHiggsWidth(wPOLE);
+//      p0hplus_VAMCFM = getJHUGenMELAWeight(mela, lepIdOrdered, angularOrdered, selfDTotalHvvcoupl);
+//
+//
+//      for (int ii = 0; ii < SIZE_HVV; ii++){ for (int jj = 0; jj < 2; jj++) selfDTotalHvvcoupl[ii][jj] = 0; }
+//      selfDTotalHvvcoupl[3][0]=2.521;
+//      mela.setMelaHiggsWidth(wPOLE);
+//      p0minus_VAMCFM = getJHUGenMELAWeight(mela, lepIdOrdered, angularOrdered, selfDTotalHvvcoupl);
+//*/
+//
+//      for (int ii = 0; ii < SIZE_HVV; ii++){ for (int jj = 0; jj < 2; jj++) selfDTotalHvvcoupl[ii][jj] = 0; }
+//      selfDTotalHvvcoupl[11][0]=-12046.01;
+//      mela.setMelaHiggsWidth(wPOLE);
+//      p0_g1prime2_VAMCFM = getJHUGenMELAWeight(mela, lepIdOrdered, angularOrdered, selfDTotalHvvcoupl);
+//
+//
+///*
+//      for (int ii = 0; ii < SIZE_HVV; ii++){ for (int jj = 0; jj < 2; jj++) selfDTotalHvvcoupl[ii][jj] = 0; }
+//      selfDTotalHvvcoupl[0][0]=1;
+//      selfDTotalHvvcoupl[1][0]=1.638;
+//      mela.setMelaHiggsWidth(wPOLE);
+//      pg1g2_VAMCFM = getJHUGenMELAWeight(mela, lepIdOrdered, angularOrdered, selfDTotalHvvcoupl);
+//
+//      for (int ii = 0; ii < SIZE_HVV; ii++){ for (int jj = 0; jj < 2; jj++) selfDTotalHvvcoupl[ii][jj] = 0; }
+//      selfDTotalHvvcoupl[0][0]=1;
+//      selfDTotalHvvcoupl[1][1]=1.638;
+//      mela.setMelaHiggsWidth(wPOLE);
+//      pg1g2_pi2_VAMCFM = getJHUGenMELAWeight(mela, lepIdOrdered, angularOrdered, selfDTotalHvvcoupl);
+//
+//      for (int ii = 0; ii < SIZE_HVV; ii++){ for (int jj = 0; jj < 2; jj++) selfDTotalHvvcoupl[ii][jj] = 0; }
+//      selfDTotalHvvcoupl[0][0]=1;
+//      selfDTotalHvvcoupl[3][0]=2.521;
+//      mela.setMelaHiggsWidth(wPOLE);
+//      pg1g4_VAMCFM = getJHUGenMELAWeight(mela, lepIdOrdered, angularOrdered, selfDTotalHvvcoupl);
+//
+//      for (int ii = 0; ii < SIZE_HVV; ii++){ for (int jj = 0; jj < 2; jj++) selfDTotalHvvcoupl[ii][jj] = 0; }
+//      selfDTotalHvvcoupl[0][0]=1;
+//      selfDTotalHvvcoupl[3][1]=2.521;
+//      mela.setMelaHiggsWidth(wPOLE);
+//      pg1g4_pi2_VAMCFM = getJHUGenMELAWeight(mela, lepIdOrdered, angularOrdered, selfDTotalHvvcoupl);
+//*/
+//
+//      for (int ii = 0; ii < SIZE_HVV; ii++){ for (int jj = 0; jj < 2; jj++) selfDTotalHvvcoupl[ii][jj] = 0; }
+//      selfDTotalHvvcoupl[0][0]=1;
+//      selfDTotalHvvcoupl[11][0]=-12046.01;
+//      mela.setMelaHiggsWidth(wPOLE);
+//      pg1g1prime2_VAMCFM = getJHUGenMELAWeight(mela, lepIdOrdered, angularOrdered, selfDTotalHvvcoupl);
+//
+//
+//      for (int ii = 0; ii < SIZE_HVV; ii++){ for (int jj = 0; jj < 2; jj++) selfDTotalHvvcoupl[ii][jj] = 0; }
+//      selfDTotalHvvcoupl[0][0]=1;
+//      selfDTotalHvvcoupl[11][1]=-12046.01;
+//      mela.setMelaHiggsWidth(wPOLE);
+//      pg1g1prime2_pi2_VAMCFM = getJHUGenMELAWeight(mela, lepIdOrdered, angularOrdered, selfDTotalHvvcoupl);
+//
+//
+//      if (recorded==0){
+//
+//      }
+//
+//
+//      pg1g2_VAJHU -= (p0plus_VAJHU + p0hplus_VAJHU);
+//      pg1g2_pi2_VAJHU -= (p0plus_VAJHU + p0hplus_VAJHU);
+//      pg1g4_VAJHU -= (p0plus_VAJHU + p0minus_VAJHU);
+//      pg1g4_pi2_VAJHU -= (p0plus_VAJHU + p0minus_VAJHU);
+//      pg1g1prime2_VAJHU -= (p0plus_VAJHU + p0_g1prime2_VAJHU);
+//      pg1g1prime2_pi2_VAJHU -= (p0plus_VAJHU + p0_g1prime2_VAJHU);
+//      pg1g2_VAMCFM -= (p0plus_VAMCFM + p0hplus_VAMCFM);
+//      pg1g2_pi2_VAMCFM -= (p0plus_VAMCFM + p0hplus_VAMCFM);
+//      pg1g4_VAMCFM -= (p0plus_VAMCFM + p0minus_VAMCFM);
+//      pg1g4_pi2_VAMCFM -= (p0plus_VAMCFM + p0minus_VAMCFM);
+//      pg1g1prime2_VAMCFM -= (p0plus_VAMCFM + p0_g1prime2_VAMCFM);
+//      pg1g1prime2_pi2_VAMCFM -= (p0plus_VAMCFM + p0_g1prime2_VAMCFM);
+//      pvbfg1g2_VAJHU -= (pvbf0plus_VAJHU + pvbf0hplus_VAJHU);
+//      pvbfg1g2_pi2_VAJHU -= (pvbf0plus_VAJHU + pvbf0hplus_VAJHU);
+//      pvbfg1g4_VAJHU -= (pvbf0plus_VAJHU + pvbf0minus_VAJHU);
+//      pvbfg1g4_pi2_VAJHU -= (pvbf0plus_VAJHU + pvbf0minus_VAJHU);
+//      pvbfg1g1prime2_VAJHU -= (pvbf0plus_VAJHU + pvbf0_g1prime2_VAJHU);
+//      pvbfg1g1prime2_pi2_VAJHU -= (pvbf0plus_VAJHU + pvbf0_g1prime2_VAJHU);
+//      pvbfg1g2_VAMCFM -= (pvbf0plus_VAMCFM + pvbf0hplus_VAMCFM);
+//      pvbfg1g2_pi2_VAMCFM -= (pvbf0plus_VAMCFM + pvbf0hplus_VAMCFM);
+//      pvbfg1g4_VAMCFM -= (pvbf0plus_VAMCFM + pvbf0minus_VAMCFM);
+//      pvbfg1g4_pi2_VAMCFM -= (pvbf0plus_VAMCFM + pvbf0minus_VAMCFM);
+//      pvbfg1g1prime2_VAMCFM -= (pvbf0plus_VAMCFM + pvbf0_g1prime2_VAMCFM);
+//      pvbfg1g1prime2_pi2_VAMCFM -= (pvbf0plus_VAMCFM + pvbf0_g1prime2_VAMCFM);
+//
+//      p0hplus_VAJHU/=p0plus_VAJHU;
+//      p0minus_VAJHU/=p0plus_VAJHU;
+//      p0_g1prime2_VAJHU/=p0plus_VAJHU;
+//      pg1g1prime2_VAJHU/=p0plus_VAJHU;
+//      pg1g1prime2_pi2_VAJHU/=p0plus_VAJHU;
+//      pg1g2_VAJHU/=p0plus_VAJHU;
+//      pg1g2_pi2_VAJHU/=p0plus_VAJHU;
+//      pg1g4_VAJHU/=p0plus_VAJHU;
+//      pg1g4_pi2_VAJHU/=p0plus_VAJHU;
+//      p0hplus_VAMCFM/=p0plus_VAMCFM;
+//      p0minus_VAMCFM/=p0plus_VAMCFM;
+//      p0_g1prime2_VAMCFM/=p0plus_VAMCFM;
+//      pg1g1prime2_VAMCFM/=p0plus_VAMCFM;
+//      pg1g1prime2_pi2_VAMCFM/=p0plus_VAMCFM;
+//      pg1g2_VAMCFM/=p0plus_VAMCFM;
+//      pg1g2_pi2_VAMCFM/=p0plus_VAMCFM;
+//      pg1g4_VAMCFM/=p0plus_VAMCFM;
+//      pg1g4_pi2_VAMCFM/=p0plus_VAMCFM;
+//      pvbf0hplus_VAJHU/=pvbf0plus_VAJHU;
+//      pvbf0minus_VAJHU/=pvbf0plus_VAJHU;
+//      pvbf0_g1prime2_VAJHU/=pvbf0plus_VAJHU;
+//      pvbfg1g1prime2_VAJHU/=pvbf0plus_VAJHU;
+//      pvbfg1g1prime2_pi2_VAJHU/=pvbf0plus_VAJHU;
+//      pvbfg1g2_VAJHU/=pvbf0plus_VAJHU;
+//      pvbfg1g2_pi2_VAJHU/=pvbf0plus_VAJHU;
+//      pvbfg1g4_VAJHU/=pvbf0plus_VAJHU;
+//      pvbfg1g4_pi2_VAJHU/=pvbf0plus_VAJHU;
+//      pvbf0hplus_VAMCFM/=pvbf0plus_VAMCFM;
+//      pvbf0minus_VAMCFM/=pvbf0plus_VAMCFM;
+//      pvbf0_g1prime2_VAMCFM/=pvbf0plus_VAMCFM;
+//      pvbfg1g1prime2_VAMCFM/=pvbf0plus_VAMCFM;
+//      pvbfg1g1prime2_pi2_VAMCFM/=pvbf0plus_VAMCFM;
+//      pvbfg1g2_VAMCFM/=pvbf0plus_VAMCFM;
+//      pvbfg1g2_pi2_VAMCFM/=pvbf0plus_VAMCFM;
+//      pvbfg1g4_VAMCFM/=pvbf0plus_VAMCFM;
+//      pvbfg1g4_pi2_VAMCFM/=pvbf0plus_VAMCFM;
+//
+//      for (int xx=0; xx<11; xx++){
+//        for (int yy=0; yy<11; yy++){
+//          pFullvbf0plus_VAJHU[xx][yy] = (rcd_pvbf0plus_VAJHU.MEsq)[xx][yy];
+//          //pFullvbf0hplus_VAJHU[xx][yy] = (rcd_pvbf0hplus_VAJHU.MEsq)[xx][yy];
+//          //pFullvbf0minus_VAJHU[xx][yy] = (rcd_pvbf0minus_VAJHU.MEsq)[xx][yy];
+//          pFullvbf0_g1prime2_VAJHU[xx][yy] = (rcd_pvbf0_g1prime2_VAJHU.MEsq)[xx][yy];
+//          /*pFullvbfg1g2_VAJHU[xx][yy] = (rcd_pvbfg1g2_VAJHU.MEsq)[xx][yy];
+//          pFullvbfg1g2_pi2_VAJHU[xx][yy] = (rcd_pvbfg1g2_pi2_VAJHU.MEsq)[xx][yy];
+//          pFullvbfg1g4_VAJHU[xx][yy] = (rcd_pvbfg1g4_VAJHU.MEsq)[xx][yy];
+//          pFullvbfg1g4_pi2_VAJHU[xx][yy] = (rcd_pvbfg1g4_pi2_VAJHU.MEsq)[xx][yy];
+//          */pFullvbfg1g1prime2_VAJHU[xx][yy] = (rcd_pvbfg1g1prime2_VAJHU.MEsq)[xx][yy];
+//          pFullvbfg1g1prime2_pi2_VAJHU[xx][yy] = (rcd_pvbfg1g1prime2_pi2_VAJHU.MEsq)[xx][yy];
+//          //pFullvbf0plus_VAMCFM[xx][yy] = (rcd_pvbf0plus_VAMCFM.MEsq)[xx][yy];
+//          //pFullvbf0hplus_VAMCFM[xx][yy] = (rcd_pvbf0hplus_VAMCFM.MEsq)[xx][yy];
+//          //pFullvbf0minus_VAMCFM[xx][yy] = (rcd_pvbf0minus_VAMCFM.MEsq)[xx][yy];
+//          pFullvbf0_g1prime2_VAMCFM[xx][yy] = (rcd_pvbf0_g1prime2_VAMCFM.MEsq)[xx][yy];
+//          /*pFullvbfg1g2_VAMCFM[xx][yy] = (rcd_pvbfg1g2_VAMCFM.MEsq)[xx][yy];
+//          pFullvbfg1g2_pi2_VAMCFM[xx][yy] = (rcd_pvbfg1g2_pi2_VAMCFM.MEsq)[xx][yy];
+//          pFullvbfg1g4_VAMCFM[xx][yy] = (rcd_pvbfg1g4_VAMCFM.MEsq)[xx][yy];
+//          pFullvbfg1g4_pi2_VAMCFM[xx][yy] = (rcd_pvbfg1g4_pi2_VAMCFM.MEsq)[xx][yy];
+//          */pFullvbfg1g1prime2_VAMCFM[xx][yy] = (rcd_pvbfg1g1prime2_VAMCFM.MEsq)[xx][yy];
+//          pFullvbfg1g1prime2_pi2_VAMCFM[xx][yy] = (rcd_pvbfg1g1prime2_pi2_VAMCFM.MEsq)[xx][yy];
+//
+//          /*pFullvbfg1g2_VAJHU[xx][yy] -= (pFullvbf0plus_VAJHU[xx][yy] + pFullvbf0hplus_VAJHU[xx][yy]);
+//          pFullvbfg1g2_pi2_VAJHU[xx][yy] -= (pFullvbf0plus_VAJHU[xx][yy] + pFullvbf0hplus_VAJHU[xx][yy]);
+//          pFullvbfg1g4_VAJHU[xx][yy] -= (pFullvbf0plus_VAJHU[xx][yy] + pFullvbf0minus_VAJHU[xx][yy]);
+//          pFullvbfg1g4_pi2_VAJHU[xx][yy] -= (pFullvbf0plus_VAJHU[xx][yy] + pFullvbf0minus_VAJHU[xx][yy]);
+//          */pFullvbfg1g1prime2_VAJHU[xx][yy] -= (pFullvbf0plus_VAJHU[xx][yy] + pFullvbf0_g1prime2_VAJHU[xx][yy]);
+//          pFullvbfg1g1prime2_pi2_VAJHU[xx][yy] -= (pFullvbf0plus_VAJHU[xx][yy] + pFullvbf0_g1prime2_VAJHU[xx][yy]);
+//          /*pFullvbfg1g2_VAMCFM[xx][yy] -= (pFullvbf0plus_VAMCFM[xx][yy] + pFullvbf0hplus_VAMCFM[xx][yy]);
+//          pFullvbfg1g2_pi2_VAMCFM[xx][yy] -= (pFullvbf0plus_VAMCFM[xx][yy] + pFullvbf0hplus_VAMCFM[xx][yy]);
+//          pFullvbfg1g4_VAMCFM[xx][yy] -= (pFullvbf0plus_VAMCFM[xx][yy] + pFullvbf0minus_VAMCFM[xx][yy]);
+//          pFullvbfg1g4_pi2_VAMCFM[xx][yy] -= (pFullvbf0plus_VAMCFM[xx][yy] + pFullvbf0minus_VAMCFM[xx][yy]);
+//          */pFullvbfg1g1prime2_VAMCFM[xx][yy] -= (pFullvbf0plus_VAMCFM[xx][yy] + pFullvbf0_g1prime2_VAMCFM[xx][yy]);
+//          pFullvbfg1g1prime2_pi2_VAMCFM[xx][yy] -= (pFullvbf0plus_VAMCFM[xx][yy] + pFullvbf0_g1prime2_VAMCFM[xx][yy]);
+//
+//          //pFullvbf0hplus_VAJHU[xx][yy]/=pFullvbf0plus_VAJHU[xx][yy];
+//          //pFullvbf0minus_VAJHU[xx][yy]/=pFullvbf0plus_VAJHU[xx][yy];
+//          pFullvbf0_g1prime2_VAJHU[xx][yy]/=pFullvbf0plus_VAJHU[xx][yy];
+//          pFullvbfg1g1prime2_VAJHU[xx][yy]/=pFullvbf0plus_VAJHU[xx][yy];
+//          pFullvbfg1g1prime2_pi2_VAJHU[xx][yy]/=pFullvbf0plus_VAJHU[xx][yy];
+//          /*pFullvbfg1g2_VAJHU[xx][yy]/=pFullvbf0plus_VAJHU[xx][yy];
+//          pFullvbfg1g2_pi2_VAJHU[xx][yy]/=pFullvbf0plus_VAJHU[xx][yy];
+//          pFullvbfg1g4_VAJHU[xx][yy]/=pFullvbf0plus_VAJHU[xx][yy];
+//          pFullvbfg1g4_pi2_VAJHU[xx][yy]/=pFullvbf0plus_VAJHU[xx][yy];
+//          pFullvbf0hplus_VAMCFM[xx][yy]/=pFullvbf0plus_VAMCFM[xx][yy];
+//          pFullvbf0minus_VAMCFM[xx][yy]/=pFullvbf0plus_VAMCFM[xx][yy];
+//          */pFullvbf0_g1prime2_VAMCFM[xx][yy]/=pFullvbf0plus_VAMCFM[xx][yy];
+//          pFullvbfg1g1prime2_VAMCFM[xx][yy]/=pFullvbf0plus_VAMCFM[xx][yy];
+//          pFullvbfg1g1prime2_pi2_VAMCFM[xx][yy]/=pFullvbf0plus_VAMCFM[xx][yy];
+//          /*pFullvbfg1g2_VAMCFM[xx][yy]/=pFullvbf0plus_VAMCFM[xx][yy];
+//          pFullvbfg1g2_pi2_VAMCFM[xx][yy]/=pFullvbf0plus_VAMCFM[xx][yy];
+//          pFullvbfg1g4_VAMCFM[xx][yy]/=pFullvbf0plus_VAMCFM[xx][yy];
+//          pFullvbfg1g4_pi2_VAMCFM[xx][yy]/=pFullvbf0plus_VAMCFM[xx][yy];
+//        */}
+//      }
+//
+//      newtree->Fill();
+//      recorded++;
+//      //if (recorded==1) break;
+//    }
+//  }
+//
+//
+//  foutput->WriteTObject(newtree);
+//  delete newtree;
+//  foutput->Close();
+//  finput->Close();
+//}
+//
 
 
 void testME_FullMELA_MCFMBSMHiggs_Ping(int flavor=1){
